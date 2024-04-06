@@ -16,6 +16,7 @@ from pajbot.modules.basic.ab import AbCommandModule
 from pajbot.modules.basic.admincommands import AdminCommandsModule
 from pajbot.modules.basic.checkmod import CheckModModule
 from pajbot.modules.basic.clip import ClipCommandModule
+from pajbot.modules.basic.coinflip import CoinFlipModule
 from pajbot.modules.basic.dbmanage import DBManageModule
 from pajbot.modules.basic.debug import DebugModule
 from pajbot.modules.basic.emotes import EmotesModule
@@ -38,7 +39,6 @@ from pajbot.modules.clr_overlay import CLROverlayModule
 from pajbot.modules.clr_overlay.emotecombo import EmoteComboModule
 from pajbot.modules.clr_overlay.emotesonscreen import EmotesOnScreenModule
 from pajbot.modules.clr_overlay.showemote import ShowEmoteModule
-from pajbot.modules.coinflip import CoinFlipModule
 from pajbot.modules.deck import DeckModule
 from pajbot.modules.default_chat_states import DefaultChatStatesModule
 from pajbot.modules.duel import DuelModule
