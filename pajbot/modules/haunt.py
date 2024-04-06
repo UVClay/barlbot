@@ -175,9 +175,8 @@ class HauntModule(BaseModule):
         if not self.loading:
             if self.last_play is not None:
                 remtime = utils.now() - self.last_play
-                remtime -= datetime.timedelta(microseconds=remtime.microseconds)
                 if remtime < datetime.timedelta(seconds=self.settings["online_global_cd"]):
-                    bot.me("It's still light out!  You need to wait " + str(datetime.timedelta(seconds=self.settings["online_global_cd"]) - remtime) + " to enter the house")
+                    bot.me("It's still light out!  You need to wait " + str(datetime.timedelta(seconds=self.settings["online_global_cd"]) - remtime).split('.')[0] + " to enter the house")
                     return False
                 else:
                     self.loading = True
