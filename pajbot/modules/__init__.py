@@ -10,6 +10,7 @@ __all__ = [
 from pajbot.modules.actionchecker import ActionCheckerModule
 from pajbot.modules.ascii import AsciiProtectionModule
 from pajbot.modules.banphrase import BanphraseModule
+from pajbot.modules.barleyspin import BarleySpinModule
 from pajbot.modules.basic import BasicCommandsModule
 from pajbot.modules.basic.ab import AbCommandModule
 from pajbot.modules.basic.admincommands import AdminCommandsModule
@@ -46,6 +47,7 @@ from pajbot.modules.emote_limit import EmoteLimitModule
 from pajbot.modules.emote_timeout import EmoteTimeoutModule
 from pajbot.modules.givepoints import GivePointsModule
 from pajbot.modules.global_command_cooldown import GlobalCommandCooldown
+from pajbot.modules.haunt import HauntModule
 from pajbot.modules.lastfm import LastfmModule
 from pajbot.modules.leaguerank import LeagueRankModule
 from pajbot.modules.linefarming import LineFarmingModule
@@ -88,6 +90,7 @@ available_modules = [
     AdminCommandsModule,
     AsciiProtectionModule,
     BanphraseModule,
+    BarleySpinModule,
     BasicCommandsModule,
     BingoModule,
     CaseCheckerModule,
@@ -112,6 +115,7 @@ available_modules = [
     FollowAgeModule,
     GivePointsModule,
     GlobalCommandCooldown,
+    HauntModule,
     IgnoreModule,
     LastfmModule,
     LeagueRankModule,
