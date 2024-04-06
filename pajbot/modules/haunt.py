@@ -170,7 +170,6 @@ class HauntModule(BaseModule):
         self.last_play = utils.now()
         self.players = []
         self.loading = False
-        schedule.clear()
 
     def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
@@ -204,7 +203,7 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            bot.execute_delayed(self.settings["wait_time"], self.haunt_results(bot))
+            self.bot.execute_delayed(self.settings["wait_time"], self.haunt_results(bot))
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
