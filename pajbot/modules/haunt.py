@@ -2,6 +2,7 @@ import datetime
 import logging
 import random
 import math
+import asyncio
 from collections import Counter
 
 import pajbot.exc
