@@ -213,7 +213,7 @@ class HauntModule(BaseModule):
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
-        self.haunt_wait(bot)
+        asyncio.run(self.haunt_wait(bot))
 
 
 
