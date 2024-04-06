@@ -207,7 +207,7 @@ class HauntModule(BaseModule):
             "user": source.name,
         }
 
-        if self.players is None:
+        if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
             ht = Thread(target=self.haunt_wait(bot))
