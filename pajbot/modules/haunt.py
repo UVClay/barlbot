@@ -166,6 +166,7 @@ class HauntModule(BaseModule):
 
         if self.players is not None:
             self.players.append(source)
+            self.me("DEBUG: " + utils.now())
             out_message = self.get_phrase("start_join_message", **arguments)
         else:
             self.players.append(source)
@@ -174,8 +175,10 @@ class HauntModule(BaseModule):
         bot.me(out_message)
 
         if self.debug is True:
+            i = 0
             for player in self.players:
-                bot.me("DEBUG: " + player.name)
+                bot.me(f"DEBUG: Player {i}: {player.name}")
+                i += 1
 
         jackpotchance = self.settings["jackpot"] * 0.01
         wipechance = self.settings["wipeout"] * 0.01
@@ -183,22 +186,20 @@ class HauntModule(BaseModule):
         outcomes = ["jackpot", "wipeout", "push"]
 
         outcome = random.choices(outcomes, weights=(jackpotchance, wipechance, pushchance), k=1)
-        bot.me("DEBUG: outcome: " + outcome[0])
-        if outcome[0] == "jackpot":
-            bot.me("everyone win :)")
-        elif outcome[0] == "wipeout":
-            bot.me("everyone lose :)")
-        elif outcome[0] == "push":
-            for player in self.players:
-                if random.randint(0,1):
-                    bot.me("DEBUG: " + player.name + " FUCKING DIED")
-                else:
-                    bot.me("DEBUG: " + player.name + " FUCKING LIVED")
+        if self.debug is True:
+            bot.me("DEBUG: outcome: " + outcome[0])
+            if outcome[0] == "jackpot":
+                bot.me("everyone win :)")
+            elif outcome[0] == "wipeout":
+                bot.me("everyone lose :)")
+            elif outcome[0] == "push":
+                for player in self.players:
+                    if random.randint(0,1):
+                        bot.me("DEBUG: " + player.name + " FUCKING DIED")
+                    else:
+                        bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
         self.players = []
-
-        bot.me("DEBUG: ok done :)")
-
 
 
 
