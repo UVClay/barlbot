@@ -101,6 +101,7 @@ class HauntModule(BaseModule):
 
     def __init__(self, bot):
         super().__init__(bot)
+        self.debug = True
         self.last_play = None
         self.players = []
         self.output_buffer = ""
@@ -129,12 +130,15 @@ class HauntModule(BaseModule):
                 bot.me("It's still light out!  You need to wait " + datetime.timedelta(seconds=self.settings["wait_time"]) + " to enter the house")
                 return False
 
-        bot.me("DEBUG: " + source.name + " is in.")
+        if self.players is not None:
+            self.players.append(source)
+            bot.me(f"{source} is going in the haunted house. barlS Join with !haunt <points>. barlGB")
+        else:
+            self.players.append(source)
 
-        self.players.append(source)
-
-        for player in self.players:
-            bot.me("DEBUG: " + player.name)
+        if self.debug is True:
+            for player in self.players:
+                bot.me("DEBUG: " + player.name)
 
         jackpotchance = self.settings["jackpot"] * 0.01
         wipechance = self.settings["wipeout"] * 0.01

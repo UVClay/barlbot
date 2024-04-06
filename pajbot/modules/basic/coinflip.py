@@ -42,9 +42,8 @@ class CoinFlipModule(BaseModule):
         #if not message:
         #    return False
 
-        lolw = random.randint(0, 1)
         # TODO: add strings to module settings
-        if lolw == 0:
+        if random.randint(0, 1):
             bot.say(f"{source} flips a coin and it lands on heads FrankerZ")
         else:
             bot.say(f"{source} flips a coin and it lands on tails ZreknarF")
