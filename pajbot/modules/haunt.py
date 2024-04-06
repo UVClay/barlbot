@@ -141,6 +141,40 @@ class HauntModule(BaseModule):
             ],
         )
 
+    async def haunt_wait(self, bot):
+        bot.me("DEBUG: Starting sleep for " + self.settings["wait_time"])
+        await asyncio.sleep(self.settings["wait_time"])
+        bot.me("Sleep ended")
+        haunt_results(self, bot)
+
+    def haunt_results(self, bot):
+        if self.debug is True:
+            i = 0
+            for player in self.players:
+                bot.me(f"DEBUG: Player {i}: {player.name}")
+                i += 1
+
+        jackpotchance = self.settings["jackpot"] * 0.01
+        wipechance = self.settings["wipeout"] * 0.01
+        pushchance = 100 - (jackpotchance + wipechance)
+        outcomes = ["jackpot", "wipeout", "push"]
+
+        outcome = random.choices(outcomes, weights=(jackpotchance, wipechance, pushchance), k=1)
+        if self.debug is True:
+            bot.me("DEBUG: outcome: " + outcome[0])
+            if outcome[0] == "jackpot":
+                bot.me("everyone win :)")
+            elif outcome[0] == "wipeout":
+                bot.me("everyone lose :)")
+            elif outcome[0] == "push":
+                for player in self.players:
+                    if random.randint(0,1):
+                        bot.me("DEBUG: " + player.name + " FUCKING DIED")
+                    else:
+                        bot.me("DEBUG: " + player.name + " FUCKING LIVED")
+
+        self.players = []
+
     def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
             if self.last_play is not None:
@@ -179,40 +213,6 @@ class HauntModule(BaseModule):
 
         bot.me(out_message)        
         haunt_wait(self, bot)
-
-    async def haunt_wait(self, bot):
-        bot.me("DEBUG: Starting sleep for " + self.settings["wait_time"])
-        await asyncio.sleep(self.settings["wait_time"])
-        bot.me("Sleep ended")
-        haunt_results(self, bot)
-
-    def haunt_results(self, bot):
-        if self.debug is True:
-            i = 0
-            for player in self.players:
-                bot.me(f"DEBUG: Player {i}: {player.name}")
-                i += 1
-
-        jackpotchance = self.settings["jackpot"] * 0.01
-        wipechance = self.settings["wipeout"] * 0.01
-        pushchance = 100 - (jackpotchance + wipechance)
-        outcomes = ["jackpot", "wipeout", "push"]
-
-        outcome = random.choices(outcomes, weights=(jackpotchance, wipechance, pushchance), k=1)
-        if self.debug is True:
-            bot.me("DEBUG: outcome: " + outcome[0])
-            if outcome[0] == "jackpot":
-                bot.me("everyone win :)")
-            elif outcome[0] == "wipeout":
-                bot.me("everyone lose :)")
-            elif outcome[0] == "push":
-                for player in self.players:
-                    if random.randint(0,1):
-                        bot.me("DEBUG: " + player.name + " FUCKING DIED")
-                    else:
-                        bot.me("DEBUG: " + player.name + " FUCKING LIVED")
-
-        self.players = []
 
 
 
