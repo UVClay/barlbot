@@ -84,7 +84,7 @@ class HauntModule(BaseModule):
         ),
         ModuleSetting(
             key="start_join_message",
-            label="Message to announce when the first player joins | Available arguments: {user}, {points}",
+            label="Message to announce when the first player joins | Available arguments: {user}, {bet}",
             type="text",
             required=True,
             default="{user} is going in the haunted house. barlS Join with !haunt <points> barlGB",
@@ -92,7 +92,7 @@ class HauntModule(BaseModule):
         ),
         ModuleSetting(
             key="join_message",
-            label="Message to announce when another player joins the game | Avaialble arguments: {user}, {points}",
+            label="Message to announce when another player joins the game | Avaialble arguments: {user}, {bet}",
             type="text",
             required=True,
             default="{user} is in! barlGB",
@@ -145,14 +145,23 @@ class HauntModule(BaseModule):
             if utils.now() - self.last_play > datetime.timedelta(seconds=self.settings["wait_time"]):
                 bot.me("It's still light out!  You need to wait " + datetime.timedelta(seconds=self.settings["wait_time"]) + " to enter the house")
                 return False
+        
+        try:
+            int(message)
+        except ValueError:
+            bot.me("{source}: You need to bet some bones to enter the house. barlOk")
+        else:
+            msg_split = message.split(" ")
+            try:
+                bet = pajbot.utils.parse_points_amount(source, msg_split[0])
+            except pajbot.exc.InvalidPointAmount as e:
+                bot.whisper(source, str(e))
+                return False
 
         arguments = {
             "bet": bet,
             "user": source.name,
         }
-
-        if result_msg == "won":
-            out_message = self.get_phrase("message_won", **arguments)
 
         if self.players is not None:
             self.players.append(source)
