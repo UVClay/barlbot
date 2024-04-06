@@ -119,13 +119,14 @@ class HauntModule(BaseModule):
         super().__init__(bot)
         self.debug = True
         self.last_play = None
+        self.loading = False
         self.players = []
         self.output_buffer = ""
         self.output_buffer_args = []
 
     def load_commands(self, **options):
         self.commands["haunt"] = Command.raw_command(
-            self.hauntlol,
+            self.hauntjoin,
             delay_all=self.settings["online_global_cd"],
             delay_user=self.settings["online_user_cd"],
             description="survive the haunted house",
@@ -140,11 +141,16 @@ class HauntModule(BaseModule):
             ],
         )
 
-    def hauntlol(self, bot, source, message, **rest):
-        if self.last_play is not None:
-            if utils.now() - self.last_play > datetime.timedelta(seconds=self.settings["wait_time"]):
-                bot.me("It's still light out!  You need to wait " + datetime.timedelta(seconds=self.settings["wait_time"]) + " to enter the house")
-                return False
+    def hauntjoin(self, bot, source, message, **rest):
+        if not self.loading:
+            if self.last_play is not None:
+                remtime = utils.now() - self.last_play
+                remtime -= datetime.timedelta(microseconds=remtime.microseconds)
+                if remtime < datetime.timedelta(seconds=self.settings["online_global_cd"]):
+                    bot.me("It's still light out!  You need to wait " + datetime.timedelta(self.settings["online_global_cd"]) - remtime + " to enter the house")
+                    return False
+                else:
+                    self.loading = True
         
         try:
             int(message)
@@ -171,8 +177,16 @@ class HauntModule(BaseModule):
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
 
-        bot.me(out_message)
+        bot.me(out_message)        
+        haunt_wait(self, bot)
 
+    async def haunt_wait(self, bot):
+        print("DEBUG: Starting sleep for " + self.settings["wait_time"])
+        await asyncio.sleep(self.settings["wait_time"])
+        print("Sleep ended")
+        haunt_results(self, bot)
+
+    def haunt_results(self, bot):
         if self.debug is True:
             i = 0
             for player in self.players:
@@ -199,6 +213,7 @@ class HauntModule(BaseModule):
                         bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
         self.players = []
+
 
 
 
