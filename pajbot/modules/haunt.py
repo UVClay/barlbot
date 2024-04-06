@@ -2,7 +2,7 @@ import datetime
 import logging
 import random
 import math
-import threading
+import asyncio
 from collections import Counter
 
 import pajbot.exc
@@ -142,7 +142,7 @@ class HauntModule(BaseModule):
             ],
         )
 
-    def haunt_wait(self, bot):
+    async def haunt_wait(self, bot):
         bot.me("DEBUG: Starting sleep for " + str(self.settings["wait_time"]))
         await asyncio.sleep(self.settings["wait_time"])
         bot.me("Sleep ended")
