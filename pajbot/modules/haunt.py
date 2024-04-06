@@ -206,7 +206,7 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            schedule.every(self.settings["wait_time"]).do(self.haunt_results)
+            schedule.every(self.settings["wait_time"]).seconds.do(self.haunt_results)
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
