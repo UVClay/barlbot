@@ -142,7 +142,7 @@ class HauntModule(BaseModule):
             ],
         )
 
-    def async_to_sync(awaitable):
+    def async_to_sync(self, awaitable):
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(awaitable)
 
