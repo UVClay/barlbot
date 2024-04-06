@@ -2,7 +2,8 @@ import datetime
 import logging
 import random
 import math
-import asyncio
+import schedule
+import time
 from collections import Counter
 
 import pajbot.exc
@@ -142,12 +143,6 @@ class HauntModule(BaseModule):
             ],
         )
 
-    async def haunt_wait(self, bot):
-        bot.me("DEBUG: Starting sleep for " + str(self.settings["wait_time"]))
-        await asyncio.sleep(self.settings["wait_time"])
-        bot.me("Sleep ended")
-        self.haunt_results(bot)
-
     def haunt_results(self, bot):
         if self.debug is True:
             i = 0
@@ -174,10 +169,12 @@ class HauntModule(BaseModule):
                     else:
                         bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
+        self.last_play = utils.now()
         self.players = []
         self.loading = False
+        schedule.clear()
 
-    async def hauntjoin(self, bot, source, message, **rest):
+    def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
             if self.last_play is not None:
                 remtime = utils.now() - self.last_play
@@ -209,7 +206,7 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            self.async_to_sync(self.haunt_wait(bot))
+            schedule.every(self.settings["wait_time"]).do(self.haunt_results)
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
