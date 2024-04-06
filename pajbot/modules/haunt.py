@@ -141,7 +141,6 @@ class HauntModule(BaseModule):
         )
 
     def hauntlol(self, bot, source, message, **rest):
-        bet = 0
         if self.last_play is not None:
             if utils.now() - self.last_play > datetime.timedelta(seconds=self.settings["wait_time"]):
                 bot.me("It's still light out!  You need to wait " + datetime.timedelta(seconds=self.settings["wait_time"]) + " to enter the house")
@@ -151,6 +150,7 @@ class HauntModule(BaseModule):
             int(message)
         except ValueError:
             bot.me(source.name + ": You need to bet some bones to enter the house. barlOk")
+            return False
         else:
             msg_split = message.split(" ")
             try:
