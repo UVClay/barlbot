@@ -142,6 +142,10 @@ class HauntModule(BaseModule):
             ],
         )
 
+    def async_to_sync(awaitable):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(awaitable)
+
     async def haunt_wait(self, bot):
         bot.me("DEBUG: Starting sleep for " + str(self.settings["wait_time"]))
         await asyncio.sleep(self.settings["wait_time"])
@@ -177,7 +181,7 @@ class HauntModule(BaseModule):
         self.players = []
         self.loading = False
 
-    async def hauntjoin(self, bot, source, message, **rest):
+    def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
             if self.last_play is not None:
                 remtime = utils.now() - self.last_play
@@ -209,7 +213,7 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            asyncio.run(self.haunt_wait(bot))
+            self.async_to_sync(self.haunt_wait(bot))
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
