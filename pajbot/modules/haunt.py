@@ -177,7 +177,7 @@ class HauntModule(BaseModule):
         self.players = []
         self.loading = False
 
-    def hauntjoin(self, bot, source, message, **rest):
+    async def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
             if self.last_play is not None:
                 remtime = utils.now() - self.last_play
