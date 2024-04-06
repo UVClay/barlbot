@@ -174,6 +174,7 @@ class HauntModule(BaseModule):
                         bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
         self.players = []
+        self.loading = False
 
     def hauntjoin(self, bot, source, message, **rest):
         if not self.loading:
