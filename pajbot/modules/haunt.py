@@ -166,7 +166,6 @@ class HauntModule(BaseModule):
 
         if self.players is not None:
             self.players.append(source)
-            bot.me("DEBUG: " + utils.now())
             out_message = self.get_phrase("start_join_message", **arguments)
         else:
             self.players.append(source)
