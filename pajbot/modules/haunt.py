@@ -145,7 +145,7 @@ class HauntModule(BaseModule):
         bot.me("DEBUG: Starting sleep for " + self.settings["wait_time"])
         await asyncio.sleep(self.settings["wait_time"])
         bot.me("Sleep ended")
-        self.haunt_results(self, bot)
+        self.haunt_results(bot)
 
     def haunt_results(self, bot):
         if self.debug is True:
@@ -213,7 +213,7 @@ class HauntModule(BaseModule):
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
-        self.haunt_wait(self, bot)
+        self.haunt_wait(bot)
 
 
 
