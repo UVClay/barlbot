@@ -83,6 +83,22 @@ class HauntModule(BaseModule):
             constraints={"min_value": 5, "max_value": 3600},
         ),
         ModuleSetting(
+            key="start_join_message",
+            label="Message to announce when the first player joins | Available arguments: {user}, {points}",
+            type="text",
+            required=True,
+            default="{user} is going in the haunted house. barlS Join with !haunt <points> barlGB",
+            constraints={"min_str_len": 0, "max_str_len": 300},
+        ),
+        ModuleSetting(
+            key="join_message",
+            label="Message to announce when another player joins the game | Avaialble arguments: {user}, {points}",
+            type="text",
+            required=True,
+            default="{user} is in! barlGB",
+            constraints={"min_str_len": 0, "max_str_len": 300},
+        ),
+        ModuleSetting(
             key="alert_message_when_live",
             label="Message to announce when the game is active again",
             type="text",
@@ -130,11 +146,22 @@ class HauntModule(BaseModule):
                 bot.me("It's still light out!  You need to wait " + datetime.timedelta(seconds=self.settings["wait_time"]) + " to enter the house")
                 return False
 
+        arguments = {
+            "bet": bet,
+            "user": source.name,
+        }
+
+        if result_msg == "won":
+            out_message = self.get_phrase("message_won", **arguments)
+
         if self.players is not None:
             self.players.append(source)
-            bot.me(f"{source} is going in the haunted house. barlS Join with !haunt <points>. barlGB")
+            out_message = self.get_phrase("start_join_message", **arguments)
         else:
             self.players.append(source)
+            out_message = self.get_phrase("join_message", **arguments)
+
+        bot.me(out_message)
 
         if self.debug is True:
             for player in self.players:
