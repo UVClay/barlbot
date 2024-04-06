@@ -149,7 +149,7 @@ class HauntModule(BaseModule):
         try:
             int(message)
         except ValueError:
-            bot.me("{source}: You need to bet some bones to enter the house. barlOk")
+            bot.me(source.name, ": You need to bet some bones to enter the house. barlOk")
         else:
             msg_split = message.split(" ")
             try:
