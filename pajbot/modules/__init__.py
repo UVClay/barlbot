@@ -38,6 +38,7 @@ from pajbot.modules.clr_overlay import CLROverlayModule
 from pajbot.modules.clr_overlay.emotecombo import EmoteComboModule
 from pajbot.modules.clr_overlay.emotesonscreen import EmotesOnScreenModule
 from pajbot.modules.clr_overlay.showemote import ShowEmoteModule
+from pajbot.modules.coinflip import CoinFlipModule
 from pajbot.modules.deck import DeckModule
 from pajbot.modules.default_chat_states import DefaultChatStatesModule
 from pajbot.modules.duel import DuelModule
@@ -100,6 +101,7 @@ available_modules = [
     CheerAlertModule,
     ClipCommandModule,
     CLROverlayModule,
+    CoinFlipModule,
     DBManageModule,
     DebugModule,
     DeckModule,
