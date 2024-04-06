@@ -141,7 +141,7 @@ class HauntModule(BaseModule):
             ],
         )
 
-    def haunt_results(self, bot):
+    def haunt_results(self):
         if self.debug is True:
             i = 0
             for player in self.players:
@@ -203,7 +203,8 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            self.bot.execute_delayed(datetime.timedelta(seconds=self.settings["wait_time"]), self.haunt_results(bot))
+            bot.execute_delayed(self.settings["wait_time"], self.haunt_results)
+
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
