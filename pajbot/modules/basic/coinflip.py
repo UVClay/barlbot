@@ -37,7 +37,7 @@ class CoinFlipModule(BaseModule):
     ]
 
     @staticmethod
-    def ab(bot, source, message, **rest):
+    def flip(bot, source, message, **rest):
         # TODO: add emote support later
         #if not message:
         #    return False
