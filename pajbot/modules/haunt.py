@@ -181,9 +181,9 @@ class HauntModule(BaseModule):
         haunt_wait(self, bot)
 
     async def haunt_wait(self, bot):
-        print("DEBUG: Starting sleep for " + self.settings["wait_time"])
+        bot.me("DEBUG: Starting sleep for " + self.settings["wait_time"])
         await asyncio.sleep(self.settings["wait_time"])
-        print("Sleep ended")
+        bot.me("Sleep ended")
         haunt_results(self, bot)
 
     def haunt_results(self, bot):
