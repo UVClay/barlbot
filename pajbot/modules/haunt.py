@@ -2,8 +2,6 @@ import datetime
 import logging
 import random
 import math
-import schedule
-import time
 from collections import Counter
 
 import pajbot.exc
@@ -50,7 +48,7 @@ class HauntModule(BaseModule):
         ),
         ModuleSetting(
             key="online_global_cd",
-            label="Global cooldown (seconds)",
+            label="Event cooldown (how long between !haunt in seconds)",
             type="number",
             required=True,
             placeholder="",
@@ -129,7 +127,7 @@ class HauntModule(BaseModule):
     def load_commands(self, **options):
         self.commands["haunt"] = Command.raw_command(
             self.hauntjoin,
-            delay_all=self.settings["online_global_cd"],
+            delay_all=0,
             delay_user=self.settings["online_user_cd"],
             description="survive the haunted house",
             can_execute_with_whisper=self.settings["can_execute_with_whisper"],
@@ -206,7 +204,7 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players.append(source)
             out_message = self.get_phrase("start_join_message", **arguments)
-            schedule.every(self.settings["wait_time"]).seconds.do(self.haunt_results)
+            bot.execute_delayed(self.settings["wait_time"], self.haunt_results(bot))
         else:
             self.players.append(source)
             out_message = self.get_phrase("join_message", **arguments)
