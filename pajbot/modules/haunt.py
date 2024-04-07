@@ -120,7 +120,7 @@ class HauntModule(BaseModule):
         self.debug = True
         self.last_play = None
         self.loading = False
-        self.players = []
+        self.players = {}
         self.output_buffer = ""
         self.output_buffer_args = []
 
@@ -155,6 +155,8 @@ class HauntModule(BaseModule):
 
         outcome = random.choices(outcomes, weights=(jackpotchance, wipechance, pushchance), k=1)
         if self.debug is True:
+            for player in self.players:
+                bot.me(f"DEBUG: Player: {player.name} Bet: {self.players[player]}")
             bot.me("DEBUG: outcome: " + outcome[0])
             if outcome[0] == "jackpot":
                 bot.me("everyone win :)")
@@ -167,8 +169,11 @@ class HauntModule(BaseModule):
                     else:
                         bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
+
+        
+
         self.last_play = utils.now()
-        self.players = []
+        self.players = {} 
         self.loading = False
 
     def hauntjoin(self, bot, source, message, **rest):
@@ -202,12 +207,12 @@ class HauntModule(BaseModule):
         }
 
         if not self.players:
-            self.players.append(source)
+            self.players[source] = bet
             out_message = self.get_phrase("start_join_message", **arguments)
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
-            self.players.append(source)
+            self.players[source] = bet
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
