@@ -29,21 +29,12 @@ class HauntModule(BaseModule):
             constraints={"min_value": 2, "max_value": 500},
         ),
         ModuleSetting(
-            key="jackpot",
-            label="Jackpot chance, all players survive (chance * 0.01)%",
+            key="sabotage",
+            label="Chance for one player to sabotage everyone else (chance * 0.01)%",
             type="number",
             required=True,
             placeholder="",
-            default=250,
-            constraints={"min_value": 0, "max_value": 10000},
-        ),
-        ModuleSetting(
-            key="wipeout",
-            label="Total wipeout chance, all players die (chance * 0.01)%",
-            type="number",
-            required=True,
-            placeholder="",
-            default=400,
+            default=5,
             constraints={"min_value": 0, "max_value": 10000},
         ),
         ModuleSetting(
@@ -79,7 +70,7 @@ class HauntModule(BaseModule):
             type="number",
             required=True,
             placeholder="",
-            default=60,
+            default=90,
             constraints={"min_value": 5, "max_value": 3600},
         ),
         ModuleSetting(
@@ -87,7 +78,7 @@ class HauntModule(BaseModule):
             label="Message to announce when the first player joins | Available arguments: {user}, {bet}",
             type="text",
             required=True,
-            default="{user} is going in the haunted house. barlS Join with !haunt <points> barlGB",
+            default="{user} is going in the haunted house. barlS Join them with !haunt <bones>!",
             constraints={"min_str_len": 0, "max_str_len": 300},
         ),
         ModuleSetting(
@@ -103,7 +94,7 @@ class HauntModule(BaseModule):
             label="Message to announce when the game is active again",
             type="text",
             required=True,
-            default="Night has fallen. Do you have what it takes to survive? !haunt <points> to find out. barlGB",
+            default="Brave souls wanted! Count Charles is terrorizing the village of Liloleman. Type !haunt <bones> to embark on the quest to banish the Count in his Manor. barlGB",
             constraints={"min_str_len": 0, "max_str_len": 300},
         ),
         ModuleSetting(
@@ -141,38 +132,67 @@ class HauntModule(BaseModule):
             ],
         )
 
+    def get_random_message(self, messages):
+        if len(messages) > 1:
+            return messages[random.randint(0, (len(messages) - 1))]
+        else:
+            return messages[0]
+
     def haunt_results(self, bot):
-        if self.debug is True:
-            i = 0
-            for player in self.players:
-                bot.me(f"DEBUG: Player {i}: {player.name}")
-                i += 1
+        sabotagechange = self.settings["sabotage"] * 0.01
+        pushchance = 100 - sabotagechange
+        outcomes = ["sabotage", "push"]
 
-        jackpotchance = self.settings["jackpot"] * 0.01
-        wipechance = self.settings["wipeout"] * 0.01
-        pushchance = 100 - (jackpotchance + wipechance)
-        outcomes = ["jackpot", "wipeout", "push"]
+        outcome = random.choices(outcomes, weights=(sabotagechange, pushchance), k=1)
 
-        outcome = random.choices(outcomes, weights=(jackpotchance, wipechance, pushchance), k=1)
-        if self.debug is True:
-            for player in self.players:
-                bot.me(f"DEBUG: Player: {player.name} Bet: {self.players[player]}")
-            bot.me("DEBUG: outcome: " + outcome[0])
-            if outcome[0] == "jackpot":
-                bot.me("everyone win :)")
-            elif outcome[0] == "wipeout":
-                bot.me("everyone lose :)")
-            elif outcome[0] == "push":
+        win_messages = [
+            " narrowly escaped the haunt, their survival a testament to their courage. The town rewards them, but the Count's shadow looms darkly on the horizon... barlHype"
+            ]
+
+        loss_messages = [
+            " found themselves cornered in the kitchen by the Count. Looks like 'hero' is on the menu tonight, boys! Better luck next time. barlFood",
+            " thought they evaded the Count's grasp in his dungeons, instead, with a sickening crunch, they found themselves split in half by one of the many traps below. Ouch. barlSaad",
+            " sought refuge in the library, good call! That was until the the shadows of the manor found new blood, dragging them into an endless, black abyss. Oof. barlGB",
+            " hid under the bed in the master bedroom, unfortunate for them, that's where the giant trapdoor spider had made it's nest. Tough break. barlS",
+            " sought refuge inside the greenhouse, however thorned vines quickly ensnare them, dragging them into the gaping maw of a behemoth sized Venus flytrap. Rough luck, indeed. barlGB"
+        ]
+
+        wipe_messages = [
+            "The group faced the Count's manor united in purpose. But the darkness proved too powerful, claiming them all. Their valiant effort ended in tragedy, their names forever etched in Liloleman's lore. barlMadn"
+        ]
+    
+        sabotage_messages = [
+            " felt an eerie sensation enveloping them, the Count's malevolent influence clouding over their mind. Before they knew it, they were horrified to find themselves standing over the bloodied remains of their allies. \
+            It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Enjoy, killer. barlMadn",
+            "While the rest of the brave adventurers entered the manor, {PLAYER} claimed they would catch up with everyone in a moment. The door slams shut \
+            and our adventurers find themselves trapped as their supposed compatriot sets fire to the house, killing everyone inside and taking the reward for themselves. Enjoy the payout, traitor. barlSaad"
+        ]
+
+        jackpot_messages = [
+            "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
+        ]
+
+        if outcome[0] == "sabotage":
+            if len(self.players) == 1:
+                continue 
+            else:
+                keys = list(self.players)
+                sus = random.randint(0, len(self.players) - 1)
+                bot.me(get_random_message(sabotage_messages))
                 for player in self.players:
-                    if random.randint(0,1):
-                        bot.me("DEBUG: " + player.name + " FUCKING DIED")
-                    else:
-                        bot.me("DEBUG: " + player.name + " FUCKING LIVED")
-
-
-        
+                    # TODO: pick up here tomorrow
+                    player.points += self.players[player] * 2
+                    HandlerManager.trigger("on_haunt_finish", user=player, points=points)
+                bot.me(get_random_message(wipe_messages))
+        elif outcome[0] == "push":
+            for player in self.players:
+                if random.randint(0,1):
+                    bot.me("DEBUG: " + player.name + " FUCKING DIED")
+                else:
+                    bot.me("DEBUG: " + player.name + " FUCKING LIVED")
 
         self.last_play = utils.now()
+        bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
         self.players = {} 
         self.loading = False
 
@@ -217,85 +237,6 @@ class HauntModule(BaseModule):
 
         bot.me(out_message)        
 
-
-#        if message is None:
-#            bot.whisper(source, "I didn't recognize your bet! Usage: !slotmachine 150 to bet 150 points")
-#            return False
-#
-#        low_tier_emotes = self.settings["low_tier_emotes"].split()
-#        high_tier_emotes = self.settings["high_tier_emotes"].split()
-#
-#        if len(low_tier_emotes) == 0 or len(high_tier_emotes) == 0:
-#            return False
-#
-#        msg_split = message.split(" ")
-#        try:
-#            bet = pajbot.utils.parse_points_amount(source, msg_split[0])
-#        except pajbot.exc.InvalidPointAmount as e:
-#            bot.whisper(source, str(e))
-#            return False
-#
-#        if not source.can_afford(bet):
-#            bot.whisper(source, f"You don't have enough points to do a slot machine pull for {bet} points :(")
-#            return False
-#
-#        if bet < self.settings["min_bet"]:
-#            bot.whisper(source, f"You have to bet at least {self.settings['min_bet']} point! :(")
-#            return False
-#
-#        # how much of the users point they're expected to get back (basically how much the house yoinks)
-#        expected_return = 1.0
-#
-#        ltsw = self.settings["ltsw"] / 100.0
-#        htsw = self.settings["htsw"] / 100.0
-#        ltbw = self.settings["ltbw"] / 100.0
-#        htbw = self.settings["htbw"] / 100.0
-#
-#        bet_return, randomized_emotes = pull_lol(
-#            low_tier_emotes, high_tier_emotes, bet, expected_return, ltsw, htsw, ltbw, htbw
-#        )
-#
-#        # Calculating the result
-#        if bet_return <= 0.0:
-#            points = -bet
-#        else:
-#            points = bet * bet_return
-#
-#        source.points += points
-#
-#        arguments = {
-#            "bet": bet,
-#            "result": points,
-#            "user": source.name,
-#            "points": source.points,
-#            "win": points > 0,
-#            "emotes": " ".join(randomized_emotes),
-#        }
-#
-#        if points > 0:
-#            out_message = self.get_phrase("message_won", **arguments)
-#        else:
-#            out_message = self.get_phrase("message_lost", **arguments)
-#
-#        if self.settings["options_output"] == "4. Combine output in chat":
-#            if bot.is_online:
-#                self.add_message(bot, arguments)
-#            else:
-#                bot.me(out_message)
-#        if self.settings["options_output"] == "1. Show results in chat":
-#            bot.me(out_message)
-#        if self.settings["options_output"] == "2. Show results in whispers":
-#            bot.whisper(source, out_message)
-#        if (
-#            self.settings["options_output"]
-#            == "3. Show results in chat if it's over X points else it will be whispered."
-#        ):
-#            if abs(points) >= self.settings["min_show_points"]:
-#                bot.me(out_message)
-#            else:
-#                bot.whisper(source, out_message)
-#
-#        HandlerManager.trigger("on_slot_machine_finish", user=source, points=points)
 
     def on_tick(self, **rest):
         if self.output_buffer == "":

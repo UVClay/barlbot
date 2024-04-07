@@ -54,6 +54,9 @@ class HandlerManager:
         # on_slot_machine_finish(user, points)
         HandlerManager.create_handler("on_slot_machine_finish")
 
+        # on_haunt_finish(user, points)
+        HandlerManager.create_handler("on_haunt_finish")
+
         # on_bingo_win(winner, game)
         HandlerManager.create_handler("on_bingo_win")
 
