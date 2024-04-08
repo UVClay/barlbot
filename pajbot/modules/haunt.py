@@ -180,7 +180,7 @@ class HauntModule(BaseModule):
             if outcome[0] == "sabotage":
                 keys = list(self.players)
                 sus = keys[random.randint(0, len(self.players) - 1)]
-                bot.me(get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
+                bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
                 suswinnings = 0
                 for player in self.players:
                     suswinnings += self.players[player]
@@ -191,7 +191,7 @@ class HauntModule(BaseModule):
                 sus.points += suswinnings
                 HandlerManager.trigger("on_haunt_finish", user=sus, points=sus.points)
 
-                bot.me(get_random_message(wipe_messages))
+                bot.me(self.get_random_message(wipe_messages))
         else:
             # Standard RNG for win loss
             winloss = []
@@ -227,14 +227,14 @@ class HauntModule(BaseModule):
             else:
                 # Jackpot
                 if winloss[0]:
-                    bot.me(get_random_message(jackpot_messages))
+                    bot.me(self.get_random_message(jackpot_messages))
                     for player in self.players:
                         player.points += self.players[player] * 2
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
 
                 else:
                 # Group wipe
-                    bot.me(get_random_message(wipe_messages))
+                    bot.me(self.get_random_message(wipe_messages))
                     for player in self.players:
                         player.points -= self.players[player]
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
