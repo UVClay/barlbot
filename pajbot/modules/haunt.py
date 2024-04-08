@@ -44,7 +44,8 @@ class HauntModule(BaseModule):
             required=True,
             placeholder="",
             default=900,
-            constraints={"min_value": 300, "max_value": 3600},
+            constraints={"min_value": 1, "max_value": 3600},
+            # XXX: CHANGE ME BACK
         ),
         ModuleSetting(
             key="online_user_cd",
