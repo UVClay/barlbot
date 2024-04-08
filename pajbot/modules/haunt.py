@@ -162,34 +162,81 @@ class HauntModule(BaseModule):
         ]
     
         sabotage_messages = [
-            " felt an eerie sensation enveloping them, the Count's malevolent influence clouding over their mind. Before they knew it, they were horrified to find themselves standing over the bloodied remains of their allies. \
+            "Upon entering the mansion, one of you felt an eerie sensation enveloping them as the Count's malevolent influence clouding over their mind. \
+            Before they knew it, {PLAYER} was horrified to find themselves standing over the bloodied remains of their allies. \
             It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Enjoy, killer. barlMadn",
             "While the rest of the brave adventurers entered the manor, {PLAYER} claimed they would catch up with everyone in a moment. The door slams shut \
-            and our adventurers find themselves trapped as their supposed compatriot sets fire to the house, killing everyone inside and taking the reward for themselves. Enjoy the payout, traitor. barlSaad"
+            and our adventurers find themselves trapped as their supposed compatriot sets fire to the house, killing everyone inside and taking the reward for themselves. \
+            Enjoy the payout, traitor. barlSaad"
         ]
 
         jackpot_messages = [
             "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
         ]
 
-        if outcome[0] == "sabotage":
-            if len(self.players) == 1:
-                continue 
-            else:
+        if not len(self.players) == 1:
+            # Only trigger sabotage if more than 1 player
+            if outcome[0] == "sabotage":
                 keys = list(self.players)
-                sus = random.randint(0, len(self.players) - 1)
-                bot.me(get_random_message(sabotage_messages))
+                sus = keys[random.randint(0, len(self.players) - 1)]
+                bot.me(get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
+                suswinnings = 0
                 for player in self.players:
-                    # TODO: pick up here tomorrow
-                    player.points += self.players[player] * 2
-                    HandlerManager.trigger("on_haunt_finish", user=player, points=points)
+                    suswinnings += self.players[player]
+                    if player.name is not sus:
+                        player.points -= self.players[player]
+                        HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
+                
+                sus.points += suswinnings
+                HandlerManager.trigger("on_haunt_finish", user=sus, points=sus.points)
+
                 bot.me(get_random_message(wipe_messages))
-        elif outcome[0] == "push":
+        else:
+            # Standard RNG for win loss
+            winloss = []
             for player in self.players:
-                if random.randint(0,1):
-                    bot.me("DEBUG: " + player.name + " FUCKING DIED")
+                winloss.append(random.randint(0,1))
+            
+            if not all(x == winloss[0] for x in winloss):
+                # Check if everyone rolled the same for jackpot/group wipe
+                i = 0
+                winners = []
+                losers = []
+                for player in self.players:
+                    if winloss[i]:
+                        winners.append(player)
+                    else:
+                        losers.append(player)
+                    i += 1
+
+                winner_buffer = ""
+                for winner in winners:
+                    winner.points += self.players[winner] * 2
+                    HandlerManager.trigger("on_haunt_finish", user=winner, points=winner.points)
+                    winner_buffer += winner + " +(" + (self.players[winner] * 2) + ") "
+                
+                loser_buffer = ""
+                for loser in losers:
+                    loser.points -= self.players[loser]
+                    loser_buffer += loser 
+
+                bot.me("Winners: " + winner_buffer)
+                bot.me("Losers: " + loser_buffer)
+
+            else:
+                # Jackpot
+                if winloss[0]:
+                    bot.me(get_random_message(jackpot_messages))
+                    for player in self.players:
+                        player.points += self.players[player] * 2
+                        HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
+
                 else:
-                    bot.me("DEBUG: " + player.name + " FUCKING LIVED")
+                # Group wipe
+                    bot.me(get_random_message(wipe_messages))
+                    for player in self.players:
+                        player.points -= self.players[player]
+                        HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
 
         self.last_play = utils.now()
         bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
@@ -229,10 +276,14 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players[source] = bet
             out_message = self.get_phrase("start_join_message", **arguments)
+            source.points -= bet
+            HandlerManager.trigger("on_haunt_finish", user=source, points=bet)
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
             self.players[source] = bet
+            source.points -= bet
+            HandlerManager.trigger("on_haunt_finish", user=source, points=bet)
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
