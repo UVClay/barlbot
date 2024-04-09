@@ -186,7 +186,6 @@ class HauntModule(BaseModule):
         ]
 
         if len(self.players) == 1:
-            outcome[0] = "sabotage"
             # Only trigger sabotage if more than 1 player
             if outcome[0] == "sabotage":
                 keys = list(self.players)
@@ -196,14 +195,14 @@ class HauntModule(BaseModule):
                 for player in self.players:
                     suswinnings += self.players[player][1]
                 self.payout(self.players[sus][0], suswinnings)
-                bot.me(f"{sus} + ({suswinnings})")
+                bot.me(f"{sus} +({suswinnings})")
         else:
             # Standard RNG for win loss
             winloss = []
             for player in self.players:
                 winloss.append(random.randint(0,1))
             
-            if not all(x == winloss[0] for x in winloss):
+            if all(x == winloss[0] for x in winloss):
                 # Check if everyone rolled the same for jackpot/group wipe
                 winner_buffer = ""
                 loser_buffer = ""
