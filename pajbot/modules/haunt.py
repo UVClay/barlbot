@@ -219,6 +219,7 @@ class HauntModule(BaseModule):
             else:
                 # Jackpot
                 if winloss[0]:
+                    log.debug(f"Haunt jackpot! All bets paid out 2x")
                     bot.me(self.get_random_message(jackpot_messages))
                     for player, bet in self.players.items():
                         log.debug(f"Player: {player.name} Bet: {bet} Points before: {player.points}")
@@ -227,6 +228,7 @@ class HauntModule(BaseModule):
 
                 else:
                 # Group wipe
+                    log.debug(f"Haunt group wipe!  All bets kept.")
                     bot.me(self.get_random_message(wipe_messages))
 
         self.last_play = utils.now()
