@@ -185,6 +185,7 @@ class HauntModule(BaseModule):
         ]
 
         if len(self.players) == 1:
+            outcome[0] = "sabotage"
             # Only trigger sabotage if more than 1 player
             if outcome[0] == "sabotage":
                 keys = list(self.players)
