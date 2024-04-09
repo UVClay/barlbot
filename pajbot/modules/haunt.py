@@ -233,7 +233,7 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(jackpot_messages))
                     winner_buffer = ""
                     for player, bet in self.players.items():
-                        self.payout(player, bet)
+                        player.points += bet * 2
 
                     bot.me(winner_buffer)
 
@@ -242,7 +242,6 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(wipe_messages))
                     loser_buffer = ""
                     for player, bet in self.players.items():
-                        self.payout(player, bet)
                         loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
 
                     bot.me(loser_buffer)
