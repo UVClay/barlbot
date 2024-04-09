@@ -231,7 +231,7 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(jackpot_messages))
                     winner_buffer = ""
                     for player in self.players:
-                        log.debug(f"Winner = {player.name} Points = {self.players[player] * 2}")
+                        log.debug(f"Winner = {player.name} Total = {player.points} Points = {self.players[player] * 2}")
                         winner_buffer += player.name + " +(" + str((self.players[player] * 2)) + ") "
                         player.points += self.players[player] * 2
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
@@ -243,7 +243,7 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(wipe_messages))
                     loser_buffer = ""
                     for player in self.players:
-                        log.debug(f"Loser = {player.name} Points = -{self.players[player]}")
+                        log.debug(f"Loser = {player.name} Total = {player.points} Points = -{self.players[player]}")
                         player.points -= self.players[player]
                         loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
