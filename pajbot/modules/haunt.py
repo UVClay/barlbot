@@ -279,7 +279,7 @@ class HauntModule(BaseModule):
                     for player in self.players:
                         # TODO: Add jackpot payout to module settings
                         self.payout(self.players[player][0], (self.players[player][1] * 2))
-                        winner_buffer += player + " (" + str(round(self.players[player[1]] * 2)) + ") "
+                        winner_buffer += player + " (" + str(round(self.players[player][1] * 2)) + ") "
                     bot.me(winner_buffer)
 
                 else:
