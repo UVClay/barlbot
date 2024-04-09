@@ -234,6 +234,7 @@ class HauntModule(BaseModule):
                         log.debug(f"Winner = {player.name} Total = {player.points} Points = {self.players[player] * 2}")
                         winner_buffer += player.name + " +(" + str((self.players[player] * 2)) + ") "
                         player.points += self.players[player] * 2
+                        log.debug(f"After point deployment: {player.points}")
                         HandlerManager.trigger("on_haunt_finish", user=player, points=(self.players[player] * 2))
 
                     bot.me(winner_buffer)
@@ -246,6 +247,7 @@ class HauntModule(BaseModule):
                         log.debug(f"Loser = {player.name} Total = {player.points} Points = -{self.players[player]}")
                         player.points -= self.players[player]
                         loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
+                        log.debug(f"After point deployment: {player.points}")
                         HandlerManager.trigger("on_haunt_finish", user=player, points=-(self.player[player]))
 
                     bot.me(loser_buffer)
