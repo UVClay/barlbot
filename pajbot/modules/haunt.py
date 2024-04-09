@@ -275,7 +275,7 @@ class HauntModule(BaseModule):
 
             elif not all(x == winloss[0] for x in winloss):
                 # low player count fallback
-                for player in players:
+                for player in self.players:
                     if random.randint(0, 1):
                         self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
                         bot.me(player + self.get_random_message(win_messages) + " +(" + round(self.players[player][1] * 2) + ")")
