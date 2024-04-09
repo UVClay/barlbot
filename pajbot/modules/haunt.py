@@ -151,8 +151,11 @@ class HauntModule(BaseModule):
 
     def generate_flavor(self, users, message):
         buffer = ""
-        for user in users[:-1]:
-            buffer += user + ", "
+        if len(users) == 1:
+            buffer += users[0] + message
+        else:
+            for user in users[:-1]:
+                buffer += user + ", "
         buffer += "& " + user[-1] + message
 
         return buffer
@@ -209,7 +212,7 @@ class HauntModule(BaseModule):
             for player in self.players:
                 winloss.append(random.randint(0,1))
             
-            if all(x == winloss[0] for x in winloss):
+            if not all(x == winloss[0] for x in winloss) and len(players) >= 6:
                 # Check if everyone rolled the same for jackpot/group wipe
                 winnings_buffer = ""
                 losses_buffer = ""
@@ -228,11 +231,11 @@ class HauntModule(BaseModule):
 
                     winner_buffer = self.generate_flavor(winners, self.get_random_message(win_messages))
 
-                if len(losers) <= 4:
+                if len(losers) <= 5:
                     loser_buffer1 = self.generate_flavor(losers, self.get_random_message(loss_messages))
                     loser_buffer2 = loser_buffer3 = ""
 
-                elif len(losers) >= 5:
+                elif len(losers) >= 7:
                     l1 = []
                     l2 = []
                     for loser in losers:
@@ -245,7 +248,7 @@ class HauntModule(BaseModule):
                     loser_buffer2 = self.generate_flavor(l2, self.get_random_message(loss_messages))
                     loser_buffer3 = ""
 
-                elif len(losers) >= 8:
+                elif len(losers) >= 9:
                     l1 = []
                     l2 = []
                     l3 = []
@@ -269,6 +272,15 @@ class HauntModule(BaseModule):
                 if loser_buffer2: bot.me(loser_buffer2)
                 if loser_buffer3: bot.me(loser_buffer3)
                 bot.me("Losers: " + losses_buffer)
+
+            elif not all(x == winloss[0] for x in winloss):
+                # low player count fallback
+                for player in players:
+                    if random.randint(0, 1):
+                        self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
+                        bot.me(player + self.get_random_message(win_messages) + " +(" + round(self.players[player][1] * 2) + ")")
+                    else:
+                        bot.me(player + self.get_random_message(loss_messages) + " -(" + self.players[player][1] + ")")
 
             else:
                 # Jackpot
