@@ -68,6 +68,15 @@ class HauntModule(BaseModule):
             constraints={"min_value": 1, "max_value": 1000000},
         ),
         ModuleSetting(
+            key="max_bet",
+            label="Maximum entry payment",
+            type="number",
+            required=True,
+            placeholder="",
+            default=100000,
+            constraints={"min_value": 10000, "max_value": 1000000},
+        ),
+        ModuleSetting(
             key="wait_time",
             label="How long to wait to start the game after first entry (seconds)",
             type="number",
@@ -333,6 +342,10 @@ class HauntModule(BaseModule):
             except pajbot.exc.InvalidPointAmount as e:
                 bot.whisper(source, str(e))
                 return False
+
+        if bet >= self.settings["max_bet"]:
+            bot.me("Slow down there, champ. High rollers NOT ALLOWED. barlOK")
+            return False
 
         arguments = {
             "bet": bet,
