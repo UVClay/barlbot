@@ -216,6 +216,7 @@ class HauntModule(BaseModule):
                 # Check if everyone rolled the same for jackpot/group wipe
                 winnings_buffer = ""
                 losses_buffer = ""
+
                 winners = []
                 losers = []
 
@@ -227,7 +228,7 @@ class HauntModule(BaseModule):
                         winnings_buffer += player + " (" + str(round(self.players[player][1] * 1.5)) + ") "
                     else:
                         losers.append(player)
-                        loser_buffer += player + " -(" + str(self.players[player][1]) + ") "
+                        losses_buffer += player + " -(" + str(self.players[player][1]) + ") "
 
                     winner_buffer = self.generate_flavor(winners, self.get_random_message(win_messages))
 
