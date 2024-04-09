@@ -143,7 +143,7 @@ class HauntModule(BaseModule):
 
     def payout(self, user, payout):
         with DBManager.create_session_scope() as db_session:
-            user_obj = User.find_by_id(db_session, str(self.players[user][0]))
+            user_obj = User.find_by_id(db_session, user)
 
             user_obj.points += payout
             HandlerManager.trigger("on_haunt_finish", user=user_obj, points=payout)
