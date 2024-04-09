@@ -321,6 +321,7 @@ class HauntModule(BaseModule):
                     self.loading = True
         
         try:
+            log.debug(f"Message:\"{message}\"")
             int(message)
         except ValueError:
             bot.me(source.name + ": You need to bet some bones to enter the house. barlOk")
