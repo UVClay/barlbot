@@ -213,7 +213,7 @@ class HauntModule(BaseModule):
                 winner_buffer = ""
                 for winner in winners:
                     winner.points += self.players[winner] * 2
-                    HandlerManager.trigger("on_haunt_finish", user=winner, points=winner.points)
+                    HandlerManager.trigger("on_haunt_finish", user=winner, points=(self.players[winner] * 2))
                     winner_buffer += winner.name + " +(" + str((self.players[winner] * 2)) + ") "
                 
                 loser_buffer = ""
