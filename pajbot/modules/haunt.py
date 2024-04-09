@@ -214,13 +214,13 @@ class HauntModule(BaseModule):
                 for winner in winners:
                     winner.points += self.players[winner] * 2
                     HandlerManager.trigger("on_haunt_finish", user=winner, points=winner.points)
-                    winner_buffer += winner.name + " +(" + (self.players[winner] * 2) + ") "
+                    winner_buffer += winner.name + " +(" + str((self.players[winner] * 2)) + ") "
                 
                 loser_buffer = ""
                 for loser in losers:
                     log.debug(f"Loser = {loser.name} Points = -{self.players[loser]}")
                     loser.points -= self.players[loser]
-                    loser_buffer += loser.name + " -(" + self.players[loser] + ")" 
+                    loser_buffer += loser.name + " -(" + str(self.players[loser]) + ")" 
 
                 bot.me("Winners: " + winner_buffer)
                 bot.me("Losers: " + loser_buffer)
@@ -232,7 +232,7 @@ class HauntModule(BaseModule):
                     winner_buffer = ""
                     for player in self.players:
                         log.debug(f"Winner = {player.name} Points = {self.players[player] * 2}")
-                        winner_buffer += player.name + " +(" + (self.players[player] * 2) + ") "
+                        winner_buffer += player.name + " +(" + str((self.players[player] * 2)) + ") "
                         player.points += self.players[player] * 2
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
 
@@ -245,7 +245,7 @@ class HauntModule(BaseModule):
                     for player in self.players:
                         log.debug(f"Loser = {player.name} Points = -{self.players[player]}")
                         player.points -= self.players[player]
-                        loser_buffer += player.name + " -(" + self.players[player] + ")"
+                        loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
 
                     bot.me(loser_buffer)
