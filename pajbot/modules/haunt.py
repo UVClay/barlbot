@@ -144,7 +144,7 @@ class HauntModule(BaseModule):
     def payout(self, user, payout):
         with DBManager.create_session_scope() as db_session:
             user_obj = User.find_by_id(db_session, user)
-            log.debug(f"Paying out to {user_obj.name}, current points: {user_obj.points}")
+            log.debug(f"Paying out to {user_obj.name}, payout: {payout}, current points: {user_obj.points}")
             user_obj.points += payout
             log.debug(f"Paid out to {user_obj.name}, current points: {user_obj.points}")
             HandlerManager.trigger("on_haunt_finish", user=user_obj, points=payout)
@@ -173,12 +173,12 @@ class HauntModule(BaseModule):
         ]
     
         sabotage_messages = [
-            "Upon entering the mansion, one of you felt an eerie sensation enveloping them as the Count's malevolent influence clouding over their mind. \
+            "Upon entering the mansion, one of you felt an eerie sensation enveloping them as the Count's malevolent influence clouded their mind. \
             Before they knew it, {PLAYER} was horrified to find themselves standing over the bloodied remains of their allies. \
-            It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Enjoy, killer. barlMadn",
+            It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Enjoy it, killer. barlMadn",
             "While the rest of the brave adventurers entered the manor, {PLAYER} claimed they would catch up with everyone in a moment. The door slams shut \
             and our adventurers find themselves trapped as their supposed compatriot sets fire to the house, killing everyone inside and taking the reward for themselves. \
-            Enjoy the payout, traitor. barlSaad"
+            Enjoy your payday, traitor. barlSaad"
         ]
 
         jackpot_messages = [
@@ -196,6 +196,7 @@ class HauntModule(BaseModule):
                 for player in self.players:
                     suswinnings += self.players[player][1]
                 self.payout(self.players[sus][0], suswinnings)
+                bot.me(f"{sus} + ({suswinnings})")
         else:
             # Standard RNG for win loss
             winloss = []
