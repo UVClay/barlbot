@@ -185,17 +185,16 @@ class HauntModule(BaseModule):
             "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
         ]
 
-        if len(self.players) == 1:
-            # Only trigger sabotage if more than 1 player
-            if outcome[0] == "sabotage":
-                keys = list(self.players)
-                sus = keys[random.randint(0, len(self.players) - 1)]
-                bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus))
-                suswinnings = 0
-                for player in self.players:
-                    suswinnings += self.players[player][1]
-                self.payout(self.players[sus][0], suswinnings)
-                bot.me(f"{sus} +({suswinnings})")
+        if len(self.players) == 1 and outcome[0] == "sabotage":
+            # Only trigger sus mode with more than 1 player
+            keys = list(self.players)
+            sus = keys[random.randint(0, len(self.players) - 1)]
+            bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus))
+            suswinnings = 0
+            for player in self.players:
+                suswinnings += self.players[player][1]
+            self.payout(self.players[sus][0], suswinnings)
+            bot.me(f"{sus} +({suswinnings})")
         else:
             # Standard RNG for win loss
             winloss = []
@@ -210,8 +209,8 @@ class HauntModule(BaseModule):
                 for player in self.players:
                     if random.randint(0, 1):
                         # TODO: Add winner return rate to module settings
-                        self.payout(self.players[player][0], self.players[player][1])
-                        winner_buffer += player + " (" + str(self.players[player][1] * 2) + ") "
+                        self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
+                        winner_buffer += player + " (" + str(round(self.players[player][1] * 1.5)) + ") "
                     else:
                         loser_buffer += player + " -(" + str(self.players[player][1]) + ") "
 
@@ -221,16 +220,23 @@ class HauntModule(BaseModule):
             else:
                 # Jackpot
                 if winloss[0]:
+                    winner_buffer = ""
                     log.debug(f"Haunt jackpot! All bets paid out 2x")
                     bot.me(self.get_random_message(jackpot_messages))
                     for player in self.players:
                         # TODO: Add jackpot payout to module settings
                         self.payout(self.players[player][0], (self.players[player][1] * 2))
+                        winner_buffer += player + " (" + str(round(self.players[player[1]] * 2)) + ") "
+                    bot.me(winner_buffer)
 
                 else:
                 # Group wipe
+                    loser_buffer = ""
                     log.debug(f"Haunt group wipe!  All bets kept.")
                     bot.me(self.get_random_message(wipe_messages))
+                    for player in self.players:
+                        loser_buffer += player + " -(" + str(self.players[player][1]) + ") "
+                    bot.me(loser_buffer)
 
         self.last_play = utils.now()
         bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
