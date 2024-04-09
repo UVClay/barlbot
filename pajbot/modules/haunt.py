@@ -184,20 +184,16 @@ class HauntModule(BaseModule):
             "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
         ]
 
-        if not len(self.players) == 1:
+        if len(self.players) == 1:
             # Only trigger sabotage if more than 1 player
             if outcome[0] == "sabotage":
                 keys = list(self.players)
                 sus = keys[random.randint(0, len(self.players) - 1)]
                 bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
                 suswinnings = 0
-                for player, bet in self.players.items():
-                    suswinnings += bet
-
-                self.payout(sus, suswinnings)
-                HandlerManager.trigger("on_haunt_finish", user=sus, points=sus.points)
-
-                bot.me(self.get_random_message(wipe_messages))
+                for player in self.players:
+                    suswinnings += self.players[player][1]
+                self.payout(self.players[sus][0], suswinnings)
         else:
             # Standard RNG for win loss
             winloss = []
@@ -272,16 +268,14 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players[source.name] = [source.id, bet]
             out_message = self.get_phrase("start_join_message", **arguments)
-            log.debug(f"{source.name} joined the haunt. Points before: {source.points} Bet: {bet}")
             source.points -= bet
-            log.debug(f"Points after: {source.points}")
+            log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
             self.players[source.name] = [source.id, bet]
-            log.debug(f"{source.name} joined the haunt. Points before: {source.points} Bet: {bet}")
             source.points -= bet
-            log.debug(f"Points after: {source.points}")
+            log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
