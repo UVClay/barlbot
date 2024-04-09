@@ -221,7 +221,9 @@ class HauntModule(BaseModule):
                 if winloss[0]:
                     bot.me(self.get_random_message(jackpot_messages))
                     for player, bet in self.players.items():
+                        log.debug(f"Player: {player.name} Bet: {bet} Points before: {player.points}")
                         player.points += bet * 2
+                        log.debug(f"Points after: {player.points}")
 
                 else:
                 # Group wipe
