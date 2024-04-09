@@ -204,24 +204,14 @@ class HauntModule(BaseModule):
             
             if not all(x == winloss[0] for x in winloss):
                 # Check if everyone rolled the same for jackpot/group wipe
-                i = 0
-                winners = {}
-                losers = {}
-                for player, bet in self.players.items():
-                    if winloss[i]:
-                        winners[source] = bet
-                    else:
-                        losers[player] = bet
-                    i += 1
-
                 winner_buffer = ""
-                for winner, bet in winners.items():
-                    self.payout(winner, bet * 2)
-                    winner_buffer += winner.name + " +(" + str((bet * 2)) + ") "
-                
                 loser_buffer = ""
-                for loser, bet in losers.items():
-                    loser_buffer += loser.name + " -(" + str(self.players[loser]) + ")" 
+                for player, bet in self.players.items():
+                    if random.randint(0, 1):
+                        player.points += bet * 2
+                        winner_buffer += player.name + " (" + str(bet * 2) + ") "
+                    else:
+                        loser_buffer += player.name + " -(" + bet + ") "
 
                 bot.me("Winners: " + winner_buffer)
                 bot.me("Losers: " + loser_buffer)
@@ -231,7 +221,7 @@ class HauntModule(BaseModule):
                 if winloss[0]:
                     bot.me(self.get_random_message(jackpot_messages))
                     for player, bet in self.players.items():
-                        self.payout(player, bet * 2)
+                        player.points += bet * 2
 
                 else:
                 # Group wipe
