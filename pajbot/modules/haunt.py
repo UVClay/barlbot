@@ -149,6 +149,14 @@ class HauntModule(BaseModule):
             log.debug(f"Paid out to {user_obj.name}, current points: {user_obj.points}")
             HandlerManager.trigger("on_haunt_finish", user=user_obj, points=payout)
 
+    def generate_flavor(self, users, message):
+        buffer = ""
+        for user in users[:-1]:
+            buffer += user + ", "
+        buffer += "& " + user[-1] + message
+
+        return buffer
+
     def haunt_results(self, bot):
         sabotagechange = self.settings["sabotage"] * 0.01
         pushchance = 100 - sabotagechange
@@ -203,19 +211,64 @@ class HauntModule(BaseModule):
             
             if all(x == winloss[0] for x in winloss):
                 # Check if everyone rolled the same for jackpot/group wipe
-                winner_buffer = ""
-                loser_buffer = ""
+                winnings_buffer = ""
+                losses_buffer = ""
+                winners = []
+                losers = []
 
                 for player in self.players:
                     if random.randint(0, 1):
                         # TODO: Add winner return rate to module settings
                         self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
-                        winner_buffer += player + " (" + str(round(self.players[player][1] * 1.5)) + ") "
+                        winners.append(player)
+                        winnings_buffer += player + " (" + str(round(self.players[player][1] * 1.5)) + ") "
                     else:
+                        losers.append(player)
                         loser_buffer += player + " -(" + str(self.players[player][1]) + ") "
 
-                bot.me("Winners: " + winner_buffer)
-                bot.me("Losers: " + loser_buffer)
+                    winner_buffer = self.generate_flavor(winners, self.get_random_message(win_messages))
+
+                if len(losers) <= 4:
+                    loser_buffer1 = self.generate_flavor(losers, self.get_random_message(loss_messages))
+                    loser_buffer2 = loser_buffer3 = ""
+
+                elif len(losers) >= 5:
+                    l1 = []
+                    l2 = []
+                    for loser in losers:
+                        if random.randint(0, 1):
+                            l1.append(loser)
+                        else:
+                            l2.append(loser)
+
+                    loser_buffer1 = self.generate_flavor(l1, self.get_random_message(loss_messages))
+                    loser_buffer2 = self.generate_flavor(l2, self.get_random_message(loss_messages))
+                    loser_buffer3 = ""
+
+                elif len(losers) >= 8:
+                    l1 = []
+                    l2 = []
+                    l3 = []
+
+                    for loser in losers:
+                        rng = random.randint(0, 2)
+                        if rng == 0:
+                            l1.append(loser)
+                        elif rng == 1:
+                            l2.append(loser)
+                        else:
+                            l3.append(loser)
+
+                    loser_buffer1 = self.generate_flavor(l1, self.get_random_message(loss_messages))
+                    loser_buffer2 = self.generate_flavor(l2, self.get_random_message(loss_messages))
+                    loser_buffer3 = self.generate_flavor(l3, self.get_random_message(loss_messages))
+
+                bot.me(winner_buffer)
+                bot.me("Winners: " + winnings_buffer)
+                bot.me(loser_buffer1)
+                if loser_buffer2: bot.me(loser_buffer2)
+                if loser_buffer3: bot.me(loser_buffer3)
+                bot.me("Losers: " + losses_buffer)
 
             else:
                 # Jackpot
