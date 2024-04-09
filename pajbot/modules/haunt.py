@@ -344,7 +344,7 @@ class HauntModule(BaseModule):
                 return False
 
         if bet >= self.settings["max_bet"]:
-            bot.me("Slow down there, champ. High rollers NOT ALLOWED. barlOK")
+            bot.me("Slow down there, champ. High rollers NOT ALLOWED. barlOk")
             return False
 
         arguments = {
