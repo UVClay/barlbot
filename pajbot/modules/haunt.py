@@ -288,12 +288,12 @@ class HauntModule(BaseModule):
         if not self.players:
             self.players[source] = bet
             out_message = self.get_phrase("start_join_message", **arguments)
-            source.points -= bet
+            #source.points -= bet
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
             self.players[source] = bet
-            source.points -= bet
+            #source.points -= bet
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
