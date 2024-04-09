@@ -156,7 +156,7 @@ class HauntModule(BaseModule):
         else:
             for user in users[:-1]:
                 buffer += user + ", "
-        buffer += "& " + user[-1] + message
+        buffer += "& " + users[-1] + message
 
         return buffer
 
