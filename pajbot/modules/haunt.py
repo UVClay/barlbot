@@ -293,6 +293,7 @@ class HauntModule(BaseModule):
                         bot.me(player + self.get_random_message(loss_messages) + " -(" + str(self.players[player][1]) + ")")
 
             else:
+                # TODO: Disallow if 1 player
                 # Jackpot
                 if winloss[0]:
                     winner_buffer = ""
@@ -319,6 +320,7 @@ class HauntModule(BaseModule):
         self.loading = False
 
     def hauntjoin(self, bot, source, message, **rest):
+        # TODO: Disallow joining multiple times
         if not self.loading:
             if self.last_play is not None:
                 playtime = utils.now() - self.last_play

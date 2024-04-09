@@ -34,6 +34,8 @@ def pull_lol(death_emotes, low_tier_emotes, high_tier_emotes, bet, house_edge, l
     for emote_name in emote_counts:
         emote_count = emote_counts[emote_name]
 
+        # TODO: fix slot machine payouts
+
         if emote_count <= 1:
             bet_return = 0.5
             continue
