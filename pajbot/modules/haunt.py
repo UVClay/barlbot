@@ -8,6 +8,8 @@ import pajbot.exc
 import pajbot.models
 import pajbot.utils
 from pajbot import utils
+from pajbot.managers.db import DBManager
+from pajbot.models.user import User
 from pajbot.managers.handler import HandlerManager
 from pajbot.models.command import Command, CommandExample
 from pajbot.modules import BaseModule, ModuleSetting
@@ -139,12 +141,13 @@ class HauntModule(BaseModule):
         else:
             return messages[0]
 
-    def payout(self, user, bet):
-        log.debug(f"Payout to {user.name}: {bet}")
-        log.debug(f"Before payout - {user.name}'s points: {user.points}")
-        user.points += bet
-        log.debug(f"After payout - {user.name}'s points: {user.points}")
-        HandlerManager.trigger("on_haunt_finish", user=user, points=bet)
+    def payout(self, user, payout):
+        with DBManager.create_session_scope() as db_session:
+            user_id = self.players[player][0]
+            user_obj = User.find_by_id(db_session, user_id)
+
+            user_obj.points += payout
+            HandlerManager.trigger("on_haunt_finish", user=user_obj, points=payout)
 
     def haunt_results(self, bot):
         sabotagechange = self.settings["sabotage"] * 0.01
@@ -206,12 +209,14 @@ class HauntModule(BaseModule):
                 # Check if everyone rolled the same for jackpot/group wipe
                 winner_buffer = ""
                 loser_buffer = ""
-                for player, bet in self.players.items():
+
+                for player in self.players:
                     if random.randint(0, 1):
-                        player.points += bet * 2
-                        winner_buffer += player.name + " (" + str(bet * 2) + ") "
+                        # TODO: Add winner return rate to module settings
+                        self.payout(self.players[player][0], self.players[player][1])
+                        winner_buffer += player + " (" + str(self.players[player][1] * 2) + ") "
                     else:
-                        loser_buffer += player.name + " -(" + bet + ") "
+                        loser_buffer += player + " -(" + str(self.players[player][1]) + ") "
 
                 bot.me("Winners: " + winner_buffer)
                 bot.me("Losers: " + loser_buffer)
@@ -221,10 +226,9 @@ class HauntModule(BaseModule):
                 if winloss[0]:
                     log.debug(f"Haunt jackpot! All bets paid out 2x")
                     bot.me(self.get_random_message(jackpot_messages))
-                    for player, bet in self.players.items():
-                        log.debug(f"Player: {player.name} Bet: {bet} Points before: {player.points}")
-                        player.points += bet * 2
-                        log.debug(f"Points after: {player.points}")
+                    for player in self.players:
+                        # TODO: Add jackpot payout to module settings
+                        self.payout(self.players[player][0], (self.players[player][1] * 2))
 
                 else:
                 # Group wipe
@@ -267,7 +271,7 @@ class HauntModule(BaseModule):
         }
 
         if not self.players:
-            self.players[source] = bet
+            self.players[source.name] = [source.id, bet]
             out_message = self.get_phrase("start_join_message", **arguments)
             log.debug(f"{source.name} joined the haunt. Points before: {source.points} Bet: {bet}")
             source.points -= bet
@@ -275,7 +279,7 @@ class HauntModule(BaseModule):
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
-            self.players[source] = bet
+            self.players[source.name] = [source.id, bet]
             log.debug(f"{source.name} joined the haunt. Points before: {source.points} Bet: {bet}")
             source.points -= bet
             log.debug(f"Points after: {source.points}")
