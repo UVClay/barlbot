@@ -328,7 +328,7 @@ class HauntModule(BaseModule):
             return False
         else:
             try:
-                bet = pajbot.utils.parse_points_amount(source, message)
+                bet = pajbot.utils.parse_points_amount(source, message.split(" ")[0])
             except pajbot.exc.InvalidPointAmount as e:
                 bot.whisper(source, str(e))
                 return False
