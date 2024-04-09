@@ -139,6 +139,10 @@ class HauntModule(BaseModule):
         else:
             return messages[0]
 
+    def payout(self, user, points):
+        #copege
+        user.points += points
+
     def haunt_results(self, bot):
         sabotagechange = self.settings["sabotage"] * 0.01
         pushchance = 100 - sabotagechange
@@ -219,7 +223,7 @@ class HauntModule(BaseModule):
                 loser_buffer = ""
                 for loser in losers:
                     log.debug(f"Loser = {loser.name} Points = -{self.players[loser]}")
-                    loser.points -= self.players[loser]
+                    self.payout(loser, self.players[loser])
                     loser_buffer += loser.name + " -(" + str(self.players[loser]) + ")" 
 
                 bot.me("Winners: " + winner_buffer)
@@ -233,7 +237,7 @@ class HauntModule(BaseModule):
                     for player in self.players:
                         log.debug(f"Winner = {player.name} Total = {player.points} Points = {self.players[player] * 2}")
                         winner_buffer += player.name + " +(" + str((self.players[player] * 2)) + ") "
-                        player.points += self.players[player] * 2
+                        self.payout(player, self.players[player])
                         log.debug(f"After point deployment: {player.points}")
                         HandlerManager.trigger("on_haunt_finish", user=player, points=(self.players[player] * 2))
 
@@ -245,8 +249,8 @@ class HauntModule(BaseModule):
                     loser_buffer = ""
                     for player in self.players:
                         log.debug(f"Loser = {player.name} Total = {player.points} Points = -{self.players[player]}")
-                        player.points -= self.players[player]
                         loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
+                        self.payout(player, self.players[player])
                         log.debug(f"After point deployment: {player.points}")
                         HandlerManager.trigger("on_haunt_finish", user=player, points=-(self.player[player]))
 
