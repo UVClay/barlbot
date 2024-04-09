@@ -243,7 +243,7 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(wipe_messages))
                     loser_buffer = ""
                     for player in self.players:
-                        log.debug(f"Loser = {loser.name} Points = -{self.players[loser]}")
+                        log.debug(f"Loser = {player.name} Points = -{self.players[player]}")
                         player.points -= self.players[player]
                         loser_buffer += player.name + " -(" + self.players[player] + ")"
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
