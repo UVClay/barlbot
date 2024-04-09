@@ -190,7 +190,7 @@ class HauntModule(BaseModule):
             if outcome[0] == "sabotage":
                 keys = list(self.players)
                 sus = keys[random.randint(0, len(self.players) - 1)]
-                bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
+                bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus))
                 suswinnings = 0
                 for player in self.players:
                     suswinnings += self.players[player][1]
