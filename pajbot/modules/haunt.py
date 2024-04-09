@@ -139,9 +139,10 @@ class HauntModule(BaseModule):
         else:
             return messages[0]
 
-    def payout(self, user, points):
-        #copege
-        user.points += points
+    def payout(self, user, bet):
+        log.debug(f"Payout to {user.name}: {bet}")
+        user.points += bet
+        HandlerManager.trigger("on_haunt_finish", user=user, points=bet)
 
     def haunt_results(self, bot):
         sabotagechange = self.settings["sabotage"] * 0.01
@@ -186,13 +187,12 @@ class HauntModule(BaseModule):
                 sus = keys[random.randint(0, len(self.players) - 1)]
                 bot.me(self.get_random_message(sabotage_messages).replace("{PLAYER}", sus.name))
                 suswinnings = 0
-                for player in self.players:
-                    suswinnings += self.players[player]
+                for player, bet in self.players.items():
+                    suswinnings += bet
                     if player.name is not sus:
-                        player.points -= self.players[player]
-                        HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
-                
-                sus.points += suswinnings
+                        self.payout(player, bet)
+
+                    # XXX: BROKEN FOR NOW LOLE                
                 HandlerManager.trigger("on_haunt_finish", user=sus, points=sus.points)
 
                 bot.me(self.get_random_message(wipe_messages))
@@ -209,20 +209,19 @@ class HauntModule(BaseModule):
                 losers = {}
                 for player, bet in self.players.items():
                     if winloss[i]:
-                        winners[player] = bet
+                        self.payout(player, bet)
+                        winners[source] = bet
                     else:
+                        self.payout(player, bet)
                         losers[player] = bet
                     i += 1
 
                 winner_buffer = ""
                 for player, bet in winners.items():
-                    player.points += bet * 2
-                    HandlerManager.trigger("on_haunt_finish", user=winner, points=(self.players[winner] * 2))
                     winner_buffer += winner.name + " +(" + str((bet * 2)) + ") "
                 
                 loser_buffer = ""
                 for player, bet in losers.items():
-                    log.debug(f"Loser = {player.name} Points = -{bet}")
                     loser_buffer += loser.name + " -(" + str(self.players[loser]) + ")" 
 
                 bot.me("Winners: " + winner_buffer)
@@ -234,9 +233,7 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(jackpot_messages))
                     winner_buffer = ""
                     for player, bet in self.players.items():
-                        log.debug(f"Winner = {player.name} Total = {player.points} Points = {bet * 2}")
-                        log.debug(f"After point deployment: {player.points}")
-                        HandlerManager.trigger("on_haunt_finish", user=player, points=(bet * 2))
+                        self.payout(player, bet)
 
                     bot.me(winner_buffer)
 
@@ -245,9 +242,8 @@ class HauntModule(BaseModule):
                     bot.me(self.get_random_message(wipe_messages))
                     loser_buffer = ""
                     for player, bet in self.players.items():
-                        log.debug(f"Loser = {player.name} Total = {player.points} Points = -{bet}")
+                        self.payout(player, bet)
                         loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
-                        HandlerManager.trigger("on_haunt_finish", user=player, points=-(bet))
 
                     bot.me(loser_buffer)
 
