@@ -209,19 +209,18 @@ class HauntModule(BaseModule):
                 losers = {}
                 for player, bet in self.players.items():
                     if winloss[i]:
-                        self.payout(player, bet)
                         winners[source] = bet
                     else:
-                        self.payout(player, bet)
                         losers[player] = bet
                     i += 1
 
                 winner_buffer = ""
-                for player, bet in winners.items():
+                for winner, bet in winners.items():
+                    self.payout(winner, bet * 2)
                     winner_buffer += winner.name + " +(" + str((bet * 2)) + ") "
                 
                 loser_buffer = ""
-                for player, bet in losers.items():
+                for loser, bet in losers.items():
                     loser_buffer += loser.name + " -(" + str(self.players[loser]) + ")" 
 
                 bot.me("Winners: " + winner_buffer)
@@ -231,20 +230,12 @@ class HauntModule(BaseModule):
                 # Jackpot
                 if winloss[0]:
                     bot.me(self.get_random_message(jackpot_messages))
-                    winner_buffer = ""
                     for player, bet in self.players.items():
-                        player.points += bet * 2
-
-                    bot.me(winner_buffer)
+                        self.payout(player, bet * 2)
 
                 else:
                 # Group wipe
                     bot.me(self.get_random_message(wipe_messages))
-                    loser_buffer = ""
-                    for player, bet in self.players.items():
-                        loser_buffer += player.name + " -(" + str(self.players[player]) + ")"
-
-                    bot.me(loser_buffer)
 
         self.last_play = utils.now()
         bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
