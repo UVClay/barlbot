@@ -212,7 +212,7 @@ class HauntModule(BaseModule):
             for player in self.players:
                 winloss.append(random.randint(0,1))
             
-            if not all(x == winloss[0] for x in winloss) and len(players) >= 6:
+            if not all(x == winloss[0] for x in winloss) and len(self.players) >= 6:
                 # Check if everyone rolled the same for jackpot/group wipe
                 winnings_buffer = ""
                 losses_buffer = ""
@@ -327,9 +327,8 @@ class HauntModule(BaseModule):
             bot.me(source.name + ": You need to bet some bones to enter the house. barlOk")
             return False
         else:
-            msg_split = message.split(" ")
             try:
-                bet = pajbot.utils.parse_points_amount(source, msg_split[0])
+                bet = pajbot.utils.parse_points_amount(source, message)
             except pajbot.exc.InvalidPointAmount as e:
                 bot.whisper(source, str(e))
                 return False
