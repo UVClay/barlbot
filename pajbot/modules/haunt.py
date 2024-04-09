@@ -218,6 +218,7 @@ class HauntModule(BaseModule):
                 
                 loser_buffer = ""
                 for loser in losers:
+                    log.debug(f"Loser = {loser.name} Points = -{self.players[loser]}")
                     loser.points -= self.players[loser]
                     loser_buffer += loser 
 
@@ -228,16 +229,26 @@ class HauntModule(BaseModule):
                 # Jackpot
                 if winloss[0]:
                     bot.me(self.get_random_message(jackpot_messages))
+                    winner_buffer = ""
                     for player in self.players:
+                        log.debug(f"Winner = {player.name} Points = {self.players[player] * 2}")
+                        winner_buffer += winner + " +(" + (self.players[winner] * 2) + ") "
                         player.points += self.players[player] * 2
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
+
+                    bot.me(winner_buffer)
 
                 else:
                 # Group wipe
                     bot.me(self.get_random_message(wipe_messages))
+                    loser_buffer = ""
                     for player in self.players:
+                        log.debug(f"Loser = {loser.name} Points = -{self.players[loser]}")
                         player.points -= self.players[player]
+                        loser_buffer += player.name + " -(" + self.players[player] + ")"
                         HandlerManager.trigger("on_haunt_finish", user=player, points=player.points)
+
+                    bot.me(loser_buffer)
 
         self.last_play = utils.now()
         bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
@@ -278,13 +289,11 @@ class HauntModule(BaseModule):
             self.players[source] = bet
             out_message = self.get_phrase("start_join_message", **arguments)
             source.points -= bet
-            HandlerManager.trigger("on_haunt_finish", user=source, points=bet)
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
             self.players[source] = bet
             source.points -= bet
-            HandlerManager.trigger("on_haunt_finish", user=source, points=bet)
             out_message = self.get_phrase("join_message", **arguments)
 
         bot.me(out_message)        
