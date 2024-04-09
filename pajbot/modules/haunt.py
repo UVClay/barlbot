@@ -141,7 +141,9 @@ class HauntModule(BaseModule):
 
     def payout(self, user, bet):
         log.debug(f"Payout to {user.name}: {bet}")
+        log.debug(f"Before payout - {user.name}'s points: {user.points}")
         user.points += bet
+        log.debug(f"After payout - {user.name}'s points: {user.points}")
         HandlerManager.trigger("on_haunt_finish", user=user, points=bet)
 
     def haunt_results(self, bot):
@@ -189,10 +191,8 @@ class HauntModule(BaseModule):
                 suswinnings = 0
                 for player, bet in self.players.items():
                     suswinnings += bet
-                    if player.name is not sus:
-                        self.payout(player, bet)
 
-                    # XXX: BROKEN FOR NOW LOLE                
+                self.payout(sus, suswinnings)
                 HandlerManager.trigger("on_haunt_finish", user=sus, points=sus.points)
 
                 bot.me(self.get_random_message(wipe_messages))
