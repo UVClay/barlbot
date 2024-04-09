@@ -278,9 +278,9 @@ class HauntModule(BaseModule):
                 for player in self.players:
                     if random.randint(0, 1):
                         self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
-                        bot.me(player + self.get_random_message(win_messages) + " +(" + round(self.players[player][1] * 2) + ")")
+                        bot.me(player + self.get_random_message(win_messages) + " +(" + str(round(self.players[player][1] * 2)) + ")")
                     else:
-                        bot.me(player + self.get_random_message(loss_messages) + " -(" + self.players[player][1] + ")")
+                        bot.me(player + self.get_random_message(loss_messages) + " -(" + str(self.players[player][1]) + ")")
 
             else:
                 # Jackpot
