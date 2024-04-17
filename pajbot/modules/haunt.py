@@ -86,6 +86,14 @@ class HauntModule(BaseModule):
             constraints={"min_value": 5, "max_value": 3600},
         ),
         ModuleSetting(
+            key="haunt_soon",
+            label="Haunt starting soon reminder message | Available arguments: {length}, {numplayers}",
+            type="text",
+            required=True,
+            default="The haunt is starting in {length} seconds! Type !haunt <points> to join {numplayers} other player(s).",
+            constraints={"min_str_len": 5, "max_str_len": 300},
+        ),
+        ModuleSetting(
             key="start_join_message",
             label="Message to announce when the first player joins | Available arguments: {user}, {bet}",
             type="text",
@@ -205,7 +213,7 @@ class HauntModule(BaseModule):
             "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
         ]
 
-        if len(self.players) == 1 and outcome[0] == "sabotage":
+        if not len(self.players) == 1 and outcome[0] == "sabotage":
             # Only trigger sus mode with more than 1 player
             keys = list(self.players)
             sus = keys[random.randint(0, len(self.players) - 1)]
@@ -221,7 +229,7 @@ class HauntModule(BaseModule):
             for player in self.players:
                 winloss.append(random.randint(0,1))
             
-            if not all(x == winloss[0] for x in winloss) and len(self.players) >= 6:
+            if not all(x == winloss[0] for x in winloss) and not len(self.players) == 1:
                 # Check if everyone rolled the same for jackpot/group wipe
                 winnings_buffer = ""
                 losses_buffer = ""
@@ -283,7 +291,7 @@ class HauntModule(BaseModule):
                 if loser_buffer3: bot.me(loser_buffer3)
                 bot.me("Losers: " + losses_buffer)
 
-            elif not all(x == winloss[0] for x in winloss):
+            elif not all(x == winloss[0] for x in winloss) or len(self.players) == 1:
                 # low player count fallback
                 for player in self.players:
                     if random.randint(0, 1):
@@ -293,7 +301,6 @@ class HauntModule(BaseModule):
                         bot.me(player + self.get_random_message(loss_messages) + " -(" + str(self.players[player][1]) + ")")
 
             else:
-                # TODO: Disallow if 1 player
                 # Jackpot
                 if winloss[0]:
                     winner_buffer = ""
@@ -320,7 +327,6 @@ class HauntModule(BaseModule):
         self.loading = False
 
     def hauntjoin(self, bot, source, message, **rest):
-        # TODO: Disallow joining multiple times
         if not self.loading:
             if self.last_play is not None:
                 playtime = utils.now() - self.last_play
@@ -359,9 +365,16 @@ class HauntModule(BaseModule):
             out_message = self.get_phrase("start_join_message", **arguments)
             source.points -= bet
             log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")
+            arguments = {"length": self.settings["wait_time"] * 0.66, "numplayers": len(self.players)}
+            bot.execute_delayed(self.settings["wait_time"] * 0.33, bot.me, self.get_phrase("haunt_soon", **arguments))
+            arguments = {"length": self.settings["wait_time"] * 0.33, "numplayers": len(self.players)}
+            bot.execute_delayed(self.settings["wait_time"] * 0.66, bot.me, self.get_phrase("haunt_soon", **arguments))
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
+            if source in self.players:
+                bot.me("You already joined the haunt you goofy!")
+                return False
             self.players[source.name] = [source.id, bet]
             source.points -= bet
             log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")

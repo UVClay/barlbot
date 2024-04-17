@@ -1,7 +1,7 @@
 import datetime
 import logging
 import random
-from collections import Counter
+from collections import Counter, namedtuple
 
 import pajbot.exc
 import pajbot.models
@@ -14,54 +14,52 @@ from pajbot.modules import BaseModule, ModuleSetting
 log = logging.getLogger(__name__)
 
 # pull_lol returns the: (bet_return, emotes)
-def pull_lol(death_emotes, low_tier_emotes, high_tier_emotes, bet, house_edge, ltsw, htsw, ltbw, htbw):
-    slot_options = []
-    for e in death_emotes:
-        slot_options += [e] * 2
-    for e in low_tier_emotes:
-        slot_options += [e] * 3
-    for e in high_tier_emotes:
-        slot_options += [e]
-
-    randomized_emotes = random.choices(slot_options, k=3)
-
-    # figure out results of these randomized emotes xd
-    bet_return = 0.0
-    result_msg = "won"
-
-    emote_counts = Counter(randomized_emotes)
-
-    for emote_name in emote_counts:
-        emote_count = emote_counts[emote_name]
-
-        # TODO: fix slot machine payouts
-
-        if emote_count <= 1:
-            bet_return = 0.5
-            continue
-
-        if emote_count == 2:
-            # return money if death
-            if emote_name in death_emotes:
-                bet_return = 0.75
-            # small win
-            elif emote_name in low_tier_emotes:
-                bet_return += ltsw
-            else:
-                bet_return += htsw
-
-        if emote_count == 3:
-            # big win
-            if emote_name in death_emotes:
-                result_msg = "lost"
-                continue
-            elif emote_name in low_tier_emotes:
-                bet_return += ltbw
-            else:
-                result_msg = "jackpot"
-                bet_return += htbw
-
-    return bet_return, randomized_emotes, result_msg
+#def pull_lol(**slotargs):
+#    slot_options = []
+#    for e in death_emotes:
+#        slot_options += [e] * 2
+#    for e in low_tier_emotes:
+#        slot_options += [e] * 3
+#    for e in high_tier_emotes:
+#        slot_options += [e]
+#
+#    randomized_emotes = random.choices(slot_options, k=3)
+#
+#    # figure out results of these randomized emotes xd
+#    bet_return = 0.0
+#    result_msg = "won"
+#
+#    emote_counts = Counter(randomized_emotes)
+#
+#    for emote_name in emote_counts:
+#        emote_count = emote_counts[emote_name]
+#
+#        if emote_count <= 1:
+#            bet_return = 0.5
+#            continue
+#
+#        if emote_count == 2:
+#            # return money if death
+#            if emote_name in death_emotes:
+#                bet_return = 0.75
+#            # small win
+#            elif emote_name in low_tier_emotes:
+#                bet_return += ltsw
+#            else:
+#                bet_return += htsw
+#
+#        if emote_count == 3:
+#            # big win
+#            if emote_name in death_emotes:
+#                result_msg = "lost"
+#                continue
+#            elif emote_name in low_tier_emotes:
+#                bet_return += ltbw
+#            else:
+#                result_msg = "jackpot"
+#                bet_return += htbw
+#
+#    return bet_return, randomized_emotes, result_msg
 
 class BarleySpinModule(BaseModule):
     ID = __name__.split(".")[-1]
@@ -97,67 +95,193 @@ class BarleySpinModule(BaseModule):
             constraints={"min_str_len": 10, "max_str_len": 400},
         ),
         ModuleSetting(
-            key="death_emotes",
-            label="Negative emotes, space-separated. Negative emtoes appear as often as high tier emotes, but reduce winnings to a 1:1 return or 0.",
+            key="death_tier_emotes",
+            label="Negative emotes, space-separated.",
             type="text",
             required=True,
-            placeholder="FeelsWeirdMan",
-            default="FeelsWeirdMan",
-            constraints={"min_str_len": 0, "max_str_len": 400},
+            placeholder="FeelsBadMan",
+            default="FeelsBadMan",
+            constraints={"min_str_len": 1, "max_str_len": 100},
+        ),
+        ModuleSetting(
+            key="death_emote_rate",
+            label="Negative emote appearance probability",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="death_emote_payout",
+            label="Negative emote payout",
+            type="number",
+            required=True,
+            placeholder=0,
+            default=0,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="bottom_tier_emotes",
+            label="Bottom tier emotes, space-separated.",
+            type="text",
+            required=True,
+            placeholder="BatChest",
+            default="BatChest",
+            constraints={"min_str_len": 1, "max_str_len": 100},
+        ),
+        ModuleSetting(
+            key="bottom_emote_rate",
+            label="Bottom tier emote appearance probability",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="bottom_emote_payout",
+            label="Bottom tier emote payout",
+            type="number",
+            required=True,
+            placeholder=0.5,
+            default=0.5,
+            constraints={"min_value": 0, "max_value": 5},
         ),
         ModuleSetting(
             key="low_tier_emotes",
-            label="Low tier emotes, space-separated. Low-tier emote are 3 times as likely to appear as high tier emotes (they get 3 slots compared to high emotes 1 slot per roll)",
+            label="Low tier emotes, space-separated.",
             type="text",
             required=True,
-            placeholder="KKona 4Head NaM",
-            default="KKona 4Head NaM",
-            constraints={"min_str_len": 0, "max_str_len": 400},
+            placeholder="4Head",
+            default="4Head",
+            constraints={"min_str_len": 1, "max_str_len": 100},
+        ),
+        ModuleSetting(
+            key="low_emote_rate",
+            label="Low tier emote appearance probability",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="low_emote_payout",
+            label="Low tier emote payout",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="mid_tier_emotes",
+            label="Mid tier emotes, space-separated.",
+            type="text",
+            required=True,
+            placeholder="NaM",
+            default="NaM",
+            constraints={"min_str_len": 1, "max_str_len": 100},
+        ),
+        ModuleSetting(
+            key="mid_emote_rate",
+            label="Mid tier emote appearance probability",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="mid_emote_payout",
+            label="Mid tier emote payout",
+            type="number",
+            required=True,
+            placeholder=1.5,
+            default=1.5,
+            constraints={"min_value": 0, "max_value": 5},
         ),
         ModuleSetting(
             key="high_tier_emotes",
             label="High tier emotes, space-separated",
             type="text",
             required=True,
-            placeholder="OpieOP EleGiggle",
-            default="OpieOP EleGiggle",
+            placeholder="KKona",
+            default="KKona",
             constraints={"min_str_len": 0, "max_str_len": 400},
         ),
         ModuleSetting(
-            key="ltsw",
-            label="Low tier small win (Percentage) 22.6% with 2 low 2 high",
+            key="high_emote_rate",
+            label="High tier emote appearance probability",
             type="number",
             required=True,
-            placeholder="",
-            default=125,
-            constraints={"min_value": 0, "max_value": 1000000},
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
         ),
         ModuleSetting(
-            key="ltbw",
-            label="Low tier big win (Percentage) 0.98% with 2 low 2 high",
+            key="high_emote_payout",
+            label="High tier emote payout",
             type="number",
             required=True,
-            placeholder="",
-            default=175,
-            constraints={"min_value": 0, "max_value": 1000000},
+            placeholder=2,
+            default=2,
+            constraints={"min_value": 0, "max_value": 5},
         ),
         ModuleSetting(
-            key="htsw",
-            label="High tier small win (Percentage) 0.14% with 2 low 2 high",
-            type="number",
+            key="god_tier_emotes",
+            label="God tier emotes, space-separated.",
+            type="text",
             required=True,
-            placeholder="",
-            default=225,
-            constraints={"min_value": 0, "max_value": 1000000},
+            placeholder="DansGame",
+            default="DansGame",
+            constraints={"min_str_len": 1, "max_str_len": 100},
         ),
         ModuleSetting(
-            key="htbw",
-            label="High tier big win (Percentage) 0.07% with 2 low 2 high",
+            key="god_emote_rate",
+            label="God tier emote appearance probability",
             type="number",
             required=True,
-            placeholder="",
-            default=400,
-            constraints={"min_value": 0, "max_value": 1000000},
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="god_emote_payout",
+            label="God tier emote payout",
+            type="number",
+            required=True,
+            placeholder=3,
+            default=3,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="giga_tier_emotes",
+            label="Giga tier emotes, space-separated. (Tier only unlocked with profile upgrade).",
+            type="text",
+            required=True,
+            placeholder="Kappa",
+            default="Kappa",
+            constraints={"min_str_len": 1, "max_str_len": 100},
+        ),
+        ModuleSetting(
+            key="giga_emote_rate",
+            label="Giga tier emote appearance probability",
+            type="number",
+            required=True,
+            placeholder=1,
+            default=1,
+            constraints={"min_value": 0, "max_value": 5},
+        ),
+        ModuleSetting(
+            key="giga_emote_payout",
+            label="Giga tier emote payout",
+            type="number",
+            required=True,
+            placeholder=5,
+            default=5,
+            constraints={"min_value": 0, "max_value": 5},
         ),
         ModuleSetting(
             key="online_global_cd",
@@ -174,17 +298,26 @@ class BarleySpinModule(BaseModule):
             type="number",
             required=True,
             placeholder="",
-            default=60,
-            constraints={"min_value": 0, "max_value": 240},
+            default=300,
+            constraints={"min_value": 0, "max_value": 600},
         ),
         ModuleSetting(
             key="min_bet",
             label="Minimum bet",
             type="number",
             required=True,
-            placeholder="",
-            default=1,
-            constraints={"min_value": 1, "max_value": 1000000},
+            placeholder="100",
+            default=100,
+            constraints={"min_value": 1, "max_value": 10000},
+        ),
+        ModuleSetting(
+            key="max_bet",
+            label="Maximum bet",
+            type="number",
+            required=True,
+            placeholder="1000",
+            default="1000",
+            constraints={"min_value": 1, "max_value": 10000},
         ),
         ModuleSetting(
             key="can_execute_with_whisper",
@@ -192,18 +325,6 @@ class BarleySpinModule(BaseModule):
             type="boolean",
             required=True,
             default=False,
-        ),
-        ModuleSetting(
-            key="options_output",
-            label="Result output options",
-            type="options",
-            required=True,
-            default="1. Show results in chat",
-            options=[
-                "1. Show results in chat",
-                "2. Show results in whispers",
-                "3. Show results in chat if it's over X points else it will be whispered.",
-            ],
         ),
         ModuleSetting(
             key="min_show_points",
@@ -234,25 +355,44 @@ class BarleySpinModule(BaseModule):
                 CommandExample(
                     None,
                     "Slots for 150 points",
-                    chat="user:!spin 150\n" "bot:▬[ barlSaad ▬ barlSmile ▬ barlSaad ]▬ | 75.0 bones paid out to UVClay!",
-                    description="Do a slot machine pull for 15 points",
+                    chat="user:!spin 150\n" "bot:▬[ barlAl ▬ barlGB ▬ barlAl ]▬ | 200 bones paid out to UVClay!",
+                    description="Play a round of slots for 150 points",
                 ).parse()
             ],
         )
         self.commands["smp"] = self.commands["spin"]
 
+
+    def speen(self, bot, source, message, **rest):
+        # TODO: add logic for giga spins once shop item is implemented
+        Emote = namedtuple('Emote', ['emote', 'tier', 'payout'])
+
+        emote_collection = []
+
+        tiers = ['death', 'bottom', 'low', 'mid', 'high', 'god']
+
+        for tier in tiers:
+            emote_collection.append(Emote(emote=self.settings[tier+"_tier_emotes"], 
+            tier=tier, payout=self.settings[tier+"_tier_payout"]))
+
+        bot.me("DEBUG:")
+        for emote in emote_collection:
+            bot.me(f"Emote: {emote.emote}, Tier: {emote.tier}, Payout: {emote.payout}")
+
+        return False
+
     def pull(self, bot, source, message, **rest):
         if message is None:
             return False
 
-
         death_emotes = self.settings["death_emotes"].split()
+        bottom_tier_emotes = self.settings["bottom_tier_emotes"].split()
         low_tier_emotes = self.settings["low_tier_emotes"].split()
+        mid_tier_emotes = self.settings["mid_tier_emotes"].split()
         high_tier_emotes = self.settings["high_tier_emotes"].split()
+        god_tier_emotes = self.settings["god_tier_emotes"].split()
+        giga_tier_emotes = self.settings["giga_tier_emotes"].split()
 
-        if len(low_tier_emotes) == 0 or len(high_tier_emotes) == 0:
-            return False
-        
         bet = 0
 
         try:
@@ -268,30 +408,25 @@ class BarleySpinModule(BaseModule):
                 return False
 
         if not source.can_afford(bet):
-            bot.whisper(source, f"You don't have enough points to spin for {bet} points :(")
+            bot.me(f"{source.name}: You don't have enough points to spin for {bet} points barlOk")
             return False
 
         if bet < self.settings["min_bet"]:
-            bot.whisper(source, f"You have to bet at least {self.settings['min_bet']} point! :(")
+            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} points! barlOk")
             return False
-
-        # how much of the users point they're expected to get back (basically how much the house yoinks)
-        expected_return = 1.0
-
-        ltsw = self.settings["ltsw"] / 100.0
-        htsw = self.settings["htsw"] / 100.0
-        ltbw = self.settings["ltbw"] / 100.0
-        htbw = self.settings["htbw"] / 100.0
-
-        bet_return, randomized_emotes, result_msg = pull_lol(
-            death_emotes, low_tier_emotes, high_tier_emotes, bet, expected_return, ltsw, htsw, ltbw, htbw
-        )
-
-        # Calculating the result
-        if bet_return <= 0.0:
-            points = -bet
+        elif bet > self.settings["max_bet"]:
+            bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} points. barlOk")
+            return False
         else:
-            points = round(bet * bet_return)
+            #source.points -= bet
+            pass
+
+        bet_return, randomized_emotes, result_msg = self.speen(bot, source, message)
+
+        if bet_return > 0:
+            points = (bet * bet_return)
+        else:
+            points = bet
 
         source.points += points
 
@@ -313,38 +448,13 @@ class BarleySpinModule(BaseModule):
         else:
             out_message = "oh holky fuck uvclay fix it idiot"
         
-        if self.settings["options_output"] == "1. Show results in chat":
-            bot.me(out_message)
-        if self.settings["options_output"] == "2. Show results in whispers":
-            bot.whisper(source, out_message)
-        if (
-            self.settings["options_output"]
-            == "3. Show results in chat if it's over X points else it will be whispered."
-        ):
-            if abs(points) >= self.settings["min_show_points"]:
-                bot.me(out_message)
-            else:
-                bot.whisper(source, out_message)
+        bot.me(out_message)
 
         HandlerManager.trigger("on_slot_machine_finish", user=source, points=points)
 
     def on_tick(self, **rest):
         if self.output_buffer == "":
             return
-
-        if self.last_add is None:
-            return
-
-        diff = utils.now() - self.last_add
-
-        if diff.seconds > 3:
-            self.flush_output_buffer()
-
-    def flush_output_buffer(self):
-        msg = self.output_buffer
-        self.bot.me(msg)
-        self.output_buffer = ""
-        self.output_buffer_args = []
 
     def enable(self, bot):
         HandlerManager.add_handler("on_tick", self.on_tick)
