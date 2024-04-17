@@ -385,14 +385,6 @@ class BarleySpinModule(BaseModule):
         if message is None:
             return False
 
-        death_emotes = self.settings["death_emotes"].split()
-        bottom_tier_emotes = self.settings["bottom_tier_emotes"].split()
-        low_tier_emotes = self.settings["low_tier_emotes"].split()
-        mid_tier_emotes = self.settings["mid_tier_emotes"].split()
-        high_tier_emotes = self.settings["high_tier_emotes"].split()
-        god_tier_emotes = self.settings["god_tier_emotes"].split()
-        giga_tier_emotes = self.settings["giga_tier_emotes"].split()
-
         bet = 0
 
         try:
