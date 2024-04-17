@@ -316,7 +316,7 @@ class BarleySpinModule(BaseModule):
             type="number",
             required=True,
             placeholder="1000",
-            default="1000",
+            default=1000,
             constraints={"min_value": 1, "max_value": 10000},
         ),
         ModuleSetting(
