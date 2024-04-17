@@ -409,7 +409,7 @@ class BarleySpinModule(BaseModule):
             bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} points. barlOk")
             return False
         elif not source.can_afford(bet):
-            bot.me(f"{source.name}: You don't have enough points to spin for {bet} points barlOk")
+            bot.me(f"{source.name}: You only have {source.points} points. barlOk")
             return False
         else:
             #source.points -= bet
