@@ -402,15 +402,14 @@ class BarleySpinModule(BaseModule):
                 bot.whisper(source, str(e))
                 return False
 
-        if not source.can_afford(bet):
-            bot.me(f"{source.name}: You don't have enough points to spin for {bet} points barlOk")
-            return False
-
         if bet < self.settings["min_bet"]:
             bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} points! barlOk")
             return False
         elif bet > self.settings["max_bet"]:
             bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} points. barlOk")
+            return False
+        elif not source.can_afford(bet):
+            bot.me(f"{source.name}: You don't have enough points to spin for {bet} points barlOk")
             return False
         else:
             #source.points -= bet
