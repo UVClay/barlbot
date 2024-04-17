@@ -106,7 +106,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="death_emote_rate",
             label="Negative emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -115,7 +115,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="death_emote_payout",
             label="Negative emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=0,
             default=0,
@@ -133,7 +133,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="bottom_emote_rate",
             label="Bottom tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -142,7 +142,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="bottom_emote_payout",
             label="Bottom tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=0.5,
             default=0.5,
@@ -160,7 +160,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="low_emote_rate",
             label="Low tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -169,7 +169,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="low_emote_payout",
             label="Low tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -187,7 +187,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="mid_emote_rate",
             label="Mid tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -196,7 +196,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="mid_emote_payout",
             label="Mid tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=1.5,
             default=1.5,
@@ -214,7 +214,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="high_emote_rate",
             label="High tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -223,7 +223,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="high_emote_payout",
             label="High tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=2,
             default=2,
@@ -241,7 +241,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="god_emote_rate",
             label="God tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -250,7 +250,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="god_emote_payout",
             label="God tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=3,
             default=3,
@@ -268,7 +268,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="giga_emote_rate",
             label="Giga tier emote appearance probability",
-            type="number",
+            type="float",
             required=True,
             placeholder=1,
             default=1,
@@ -277,7 +277,7 @@ class BarleySpinModule(BaseModule):
         ModuleSetting(
             key="giga_emote_payout",
             label="Giga tier emote payout",
-            type="number",
+            type="float",
             required=True,
             placeholder=5,
             default=5,

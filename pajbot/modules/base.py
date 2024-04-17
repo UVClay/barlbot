@@ -26,6 +26,9 @@ class ModuleSetting:
       * number - A number input (Integer)
           * min_value
           * max_value
+      * float - A number input (Float)
+          * min_value
+          * max_value
       * boolean - A checkbox input
       * options - A select/options list
     """
@@ -85,6 +88,19 @@ class ModuleSetting:
             value = int(str_value)
         except ValueError:
             return False, "Not a valid integer"
+
+        if "min_value" in self.constraints and value < self.constraints["min_value"]:
+            return (False, f"needs to have a value that is at least {self.constraints['min_value']}")
+        if "max_value" in self.constraints and value > self.constraints["max_value"]:
+            return (False, f"needs to have a value that is at most {self.constraints['max_value']}")
+        return True, value
+
+    def validate_float(self, str_value: str) -> tuple[bool, Union[str, float]]:
+        """Validate a float value"""
+        try:
+            value = float(str_value)
+        except ValueError:
+            return False, "Not a valid float"
 
         if "min_value" in self.constraints and value < self.constraints["min_value"]:
             return (False, f"needs to have a value that is at least {self.constraints['min_value']}")
