@@ -363,12 +363,14 @@ class BarleySpinModule(BaseModule):
         self.commands["smp"] = self.commands["spin"]
 
 
-    def speen(self, bot, source, message, **rest):
+    def speen(self):
+        """ Returns bet_return, randomized_emotes, result_msg """
         # TODO: add logic for giga spins once shop item is implemented
         Emote = namedtuple('Emote', ['emote', 'tier', 'payout'])
 
         emote_collection = []
-
+        randomized_emotes = []
+        
         tiers = ['death', 'bottom', 'low', 'mid', 'high', 'god']
 
         for tier in tiers:
@@ -378,11 +380,29 @@ class BarleySpinModule(BaseModule):
                 tier=tier, payout=self.settings[tier+"_emote_payout"]))
                 n += 1
 
-        bot.me("DEBUG:")
-        for emote in emote_collection:
-            bot.me(f"Emote: {emote.emote}, Tier: {emote.tier}, Payout: {emote.payout}")
 
-        return False
+        rand1 = random.randint(0, len(emote_collection) - 1)
+        rand2 = random.randint(0, len(emote_collection) - 1)
+        rand3 = random.randint(0, len(emote_collection) - 1)
+
+        randomized_emotes.append(emote_collection[rand1])
+        randomized_emotes.append(emote_collection[rand2])
+        randomized_emotes.append(emote_collection[rand3])
+
+        if randomized_emotes[0].tier == randomized_emotes[1].tier == randomized_emotes[2].tier:
+            if randomized_emotes[0].tier == "death":
+                bet_return = 0
+                result_msg = "lost"
+            elif randomized_emotes[0].tier == "god":
+                bet_return = 3
+                result_msg = "jackpot"
+
+        else:
+            bet_return = (randomized_emotes[0].payout + randomized_emotes[1].payout + randomized_emotes[2].payout) / 3
+            result_msg = "won"
+
+        return bet_return, randomized_emotes, result_msg
+
 
     def pull(self, bot, source, message, **rest):
         if message is None:
@@ -412,13 +432,13 @@ class BarleySpinModule(BaseModule):
             bot.me(f"{source.name}: You only have {source.points} points. barlOk")
             return False
         else:
-            #source.points -= bet
-            pass
+            source.points -= bet
 
-        bet_return, randomized_emotes, result_msg = self.speen(bot, source, message)
+        bet_return, randomized_emotes, result_msg = self.speen()
 
         if bet_return > 0:
             points = (bet * bet_return)
+            source.points += points
         else:
             points = bet
 
@@ -430,7 +450,7 @@ class BarleySpinModule(BaseModule):
             "user": source.name,
             "points": source.points,
             "win": points > 0,
-            "emotes": " ▬ ".join(randomized_emotes),
+            "emotes": " ▬ ".join(randomized_emotes.emote),
         }
 
         if result_msg == "won":
