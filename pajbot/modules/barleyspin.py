@@ -369,6 +369,7 @@ class BarleySpinModule(BaseModule):
         Emote = namedtuple('Emote', ['emote', 'tier', 'payout'])
 
         emote_collection = []
+        result_emotes = []
         randomized_emotes = []
         
         tiers = ['death', 'bottom', 'low', 'mid', 'high', 'god']
@@ -385,21 +386,24 @@ class BarleySpinModule(BaseModule):
         rand2 = random.randint(0, len(emote_collection) - 1)
         rand3 = random.randint(0, len(emote_collection) - 1)
 
-        randomized_emotes.append(emote_collection[rand1])
-        randomized_emotes.append(emote_collection[rand2])
-        randomized_emotes.append(emote_collection[rand3])
+        result_emotes.append(emote_collection[rand1])
+        result_emotes.append(emote_collection[rand2])
+        result_emotes.append(emote_collection[rand3])
 
-        if randomized_emotes[0].tier == randomized_emotes[1].tier == randomized_emotes[2].tier:
-            if randomized_emotes[0].tier == "death":
+        if result_emotes[0].tier == result_emotes[1].tier == result_emotes[2].tier:
+            if result_emotes[0].tier == "death":
                 bet_return = 0
                 result_msg = "lost"
-            elif randomized_emotes[0].tier == "god":
+            elif result_emotes[0].tier == "god":
                 bet_return = 3
                 result_msg = "jackpot"
 
         else:
-            bet_return = (randomized_emotes[0].payout + randomized_emotes[1].payout + randomized_emotes[2].payout) / 3
+            bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) / 3
             result_msg = "won"
+
+        for emote in result_emotes:
+            randomized_emotes.append(emote.emote)
 
         return bet_return, randomized_emotes, result_msg
 
@@ -450,7 +454,7 @@ class BarleySpinModule(BaseModule):
             "user": source.name,
             "points": source.points,
             "win": points > 0,
-            "emotes": " ▬ ".join(randomized_emotes.emote),
+            "emotes": " ▬ ".join(randomized_emotes),
         }
 
         if result_msg == "won":
