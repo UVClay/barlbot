@@ -372,8 +372,11 @@ class BarleySpinModule(BaseModule):
         tiers = ['death', 'bottom', 'low', 'mid', 'high', 'god']
 
         for tier in tiers:
-            emote_collection.append(Emote(emote=self.settings[tier+"_tier_emotes"], 
-            tier=tier, payout=self.settings[tier+"_emote_payout"]))
+            n = 0
+            while n > int(self.settings[tier+"_tier_rate"]):
+                emote_collection.append(Emote(emote=self.settings[tier+"_tier_emotes"], 
+                tier=tier, payout=self.settings[tier+"_emote_payout"]))
+                n += 1
 
         bot.me("DEBUG:")
         for emote in emote_collection:
