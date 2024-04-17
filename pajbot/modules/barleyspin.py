@@ -373,7 +373,7 @@ class BarleySpinModule(BaseModule):
 
         for tier in tiers:
             n = 0
-            while n > int(self.settings[tier+"_emote_rate"]):
+            while n < int(self.settings[tier+"_emote_rate"]):
                 emote_collection.append(Emote(emote=self.settings[tier+"_tier_emotes"], 
                 tier=tier, payout=self.settings[tier+"_emote_payout"]))
                 n += 1
