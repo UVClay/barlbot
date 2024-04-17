@@ -113,6 +113,11 @@ $(document).ready(function() {
                                        type: 'integer[{{ con_value }}..{{ setting.constraints['max_value'] }}]',
                                        prompt: '"{{ setting.label }}" must be at least {{ con_value }} and at most {{ setting.constraints['max_value'] }}'
                                    },
+                                   {% elif con_key == 'fmin_value' and 'fmax_value' in setting.constraints %}
+                                   {
+                                       type: 'float[{{ con_value }}..{{ setting.constraints['max_value'] }}]',
+                                       prompt: '"{{ setting.label }}" must be at least {{ con_value }} and at most {{ setting.constraints['max_value'] }}'
+                                   },
                                    {% endif %}
                                    {% endfor %}
                                    ]

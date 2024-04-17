@@ -110,7 +110,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="death_emote_payout",
@@ -119,7 +119,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=0,
             default=0,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="bottom_tier_emotes",
@@ -137,7 +137,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="bottom_emote_payout",
@@ -146,7 +146,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=0.5,
             default=0.5,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="low_tier_emotes",
@@ -164,7 +164,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="low_emote_payout",
@@ -173,7 +173,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="mid_tier_emotes",
@@ -191,7 +191,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="mid_emote_payout",
@@ -200,7 +200,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1.5,
             default=1.5,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="high_tier_emotes",
@@ -218,7 +218,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="high_emote_payout",
@@ -227,7 +227,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=2,
             default=2,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="god_tier_emotes",
@@ -245,7 +245,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="god_emote_payout",
@@ -254,7 +254,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=3,
             default=3,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="giga_tier_emotes",
@@ -272,7 +272,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=1,
             default=1,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="giga_emote_payout",
@@ -281,7 +281,7 @@ class BarleySpinModule(BaseModule):
             required=True,
             placeholder=5,
             default=5,
-            constraints={"min_value": 0, "max_value": 5},
+            constraints={"fmin_value": 0, "fmax_value": 5},
         ),
         ModuleSetting(
             key="online_global_cd",

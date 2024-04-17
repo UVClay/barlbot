@@ -102,10 +102,10 @@ class ModuleSetting:
         except ValueError:
             return False, "Not a valid float"
 
-        if "min_value" in self.constraints and value < self.constraints["min_value"]:
-            return (False, f"needs to have a value that is at least {self.constraints['min_value']}")
-        if "max_value" in self.constraints and value > self.constraints["max_value"]:
-            return (False, f"needs to have a value that is at most {self.constraints['max_value']}")
+        if "min_value" in self.constraints and value < self.constraints["fmin_value"]:
+            return (False, f"needs to have a value that is at least {self.constraints['fmin_value']}")
+        if "max_value" in self.constraints and value > self.constraints["fmax_value"]:
+            return (False, f"needs to have a value that is at most {self.constraints['fmax_value']}")
         return True, value
 
     @staticmethod
