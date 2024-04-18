@@ -399,7 +399,7 @@ class BarleySpinModule(BaseModule):
                 result_msg = "jackpot"
 
         else:
-            bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) * random.uniform(0.9, 1.2)
+            bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) * random.uniform(0.3, 0.7)
             result_msg = "won"
 
         for emote in result_emotes:
