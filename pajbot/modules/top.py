@@ -81,12 +81,10 @@ class TopModule(BaseModule):
         ),
     ]
 
-    def __init__(self, bot):
-        super().__init__(bot)
-        self.excluded_usernames = self.settings["excluded_users"].split()
 
     def top_chatters(self, bot, **rest):
         data = []
+        excluded_usernames = self.settings["excluded_users"].split()
         limit = int(self.settings["num_top"]) + len(self.excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
@@ -100,6 +98,7 @@ class TopModule(BaseModule):
 
     def top_watchers(self, bot, **rest):
         data = []
+        excluded_usernames = self.settings["excluded_users"].split()
         limit = int(self.settings["num_top"]) + len(self.excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
@@ -115,6 +114,7 @@ class TopModule(BaseModule):
 
     def top_offline(self, bot, **rest):
         data = []
+        excluded_usernames = self.settings["excluded_users"].split()
         limit = int(self.settings["num_top"]) + len(self.excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
@@ -130,6 +130,7 @@ class TopModule(BaseModule):
 
     def top_points(self, bot, **rest):
         data = []
+        excluded_usernames = self.settings["excluded_users"].split()
         limit = int(self.settings["num_top"]) + len(self.excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
