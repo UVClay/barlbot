@@ -376,7 +376,7 @@ class BarleySpinModule(BaseModule):
                 bet_return = 9
                 result_msg = "jackpot"
             elif result_emotes[0].tier == "bottom":
-                bet_return = result_emotes[0].payout * random.uniform(1.0, 2.0)
+                bet_return = result_emotes[0].payout * random.uniform(1.0, 1.9)
                 result_msg = "bottom"
             else:
                 bet_return = result_emotes[0].payout * random.uniform(2.5, 4.0)
