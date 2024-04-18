@@ -230,7 +230,7 @@ class Command(Base):
     examples = relationship(CommandExample, uselist=True, cascade="", lazy="noload")
 
     MIN_WHISPER_LEVEL = 420
-    BYPASS_DELAY_LEVEL = 2000
+    BYPASS_DELAY_LEVEL = 1999
     BYPASS_SUB_ONLY_LEVEL = 500
     BYPASS_MOD_ONLY_LEVEL = 500
 
