@@ -39,7 +39,7 @@ class AdminCommandsModule(BaseModule):
 
         msg_split = message.split(" ")
         if len(msg_split) < 2:
-            bot.whisper(source, f"Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Usage: !banksub USERNAME POINTS")
             return False
 
         username_input = msg_split[0]
@@ -47,7 +47,7 @@ class AdminCommandsModule(BaseModule):
         try:
             num_points = int(msg_split[1])
         except (ValueError, TypeError):
-            bot.whisper(source, f"Invalid amount of points. Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Invalid amount of points. Usage: !banksub USERNAME POINTS")
             return False
 
         with DBManager.create_session_scope() as db_session:
@@ -68,7 +68,7 @@ class AdminCommandsModule(BaseModule):
         msg_split = message.split(" ")
         if len(msg_split) < 2:
             # The user did not supply enough arguments
-            bot.whisper(source, f"Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Usage: !bankadd USERNAME POINTS")
             return False
 
         username_input = msg_split[0]
@@ -77,7 +77,7 @@ class AdminCommandsModule(BaseModule):
             num_points = int(msg_split[1])
         except (ValueError, TypeError):
             # The user did not specify a valid integer for points
-            bot.whisper(source, f"Invalid amount of points. Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Invalid amount of points. Usage: !bankadd USERNAME POINTS")
             return False
 
         with DBManager.create_session_scope() as db_session:
@@ -100,7 +100,7 @@ class AdminCommandsModule(BaseModule):
         msg_split = message.split(" ")
         if len(msg_split) < 2:
             # The user did not supply enough arguments
-            bot.whisper(source, f"Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Usage: !bankedit USERNAME POINTS")
             return False
 
         username = msg_split[0]
@@ -112,7 +112,7 @@ class AdminCommandsModule(BaseModule):
             num_points = int(msg_split[1])
         except (ValueError, TypeError):
             # The user did not specify a valid integer for points
-            bot.whisper(source, f"Invalid amount of points. Usage: !{self.command_name} USERNAME POINTS")
+            bot.whisper(source, f"Invalid amount of points. Usage: !bankedit USERNAME POINTS")
             return False
 
         with DBManager.create_session_scope() as db_session:
