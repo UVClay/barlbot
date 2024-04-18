@@ -38,8 +38,17 @@ class BarleySpinModule(BaseModule):
             constraints={"min_str_len": 10, "max_str_len": 400},
         ),
         ModuleSetting(
-            key="message_lost",
+            key="message_loss",
             label="Lost message | Available arguments: {bet}, {bet_return}, {points}, {user}, {emotes}",
+            type="text",
+            required=True,
+            placeholder="▬[ {emotes} ]▬ | NO MONEY {user} barlMadden NO PRIZES barlMadden I HATE IT barl1 barl2",
+            default="▬[ {emotes} ]▬ | NO MONEY {user} barlMadden NO PRIZES barlMadden I HATE IT barl1 barl2",
+            constraints={"min_str_len": 10, "max_str_len": 400},
+        ),
+        ModuleSetting(
+            key="message_death",
+            label="Reverse jackpot message | Available arguments: {bet}, {bet_return}, {points}, {user}, {emotes}",
             type="text",
             required=True,
             placeholder="▬[ {emotes} ]▬ | NO MONEY {user} barlMadden NO PRIZES barlMadden I HATE IT barl1 barl2",
@@ -362,7 +371,7 @@ class BarleySpinModule(BaseModule):
         if result_emotes[0].tier == result_emotes[1].tier == result_emotes[2].tier:
             if result_emotes[0].tier == "death":
                 bet_return = 0
-                result_msg = "lost"
+                result_msg = "death"
             elif result_emotes[0].tier == "god":
                 bet_return = 9
                 result_msg = "jackpot"
@@ -375,7 +384,10 @@ class BarleySpinModule(BaseModule):
 
         else:
             bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) * random.uniform(0.3, 0.7)
-            result_msg = "won"
+            if bet_return < 1:
+                result_msg = "loss"
+            else:
+                result_msg = "won"
 
         for emote in result_emotes:
             randomized_emotes.append(emote.emote)
@@ -426,24 +438,27 @@ class BarleySpinModule(BaseModule):
         arguments = {
             "bet_return": round(bet_return, 2),
             "bet": bet,
-            "result": points,
+            "result": points - bet,
             "user": source.name,
             "points": source.points,
             "emotes": " ▬ ".join(randomized_emotes),
         }
 
-        log.debug(f"User: {source.name} Result: {result_msg} Bet: {bet} Return: {bet_return} Total: {points}")
+        log.debug(f"User: {source.name} Result: {result_msg} Bet: {bet} Return: {round(bet_return, 2)} Total: {points}")
 
         if result_msg == "won":
             out_message = self.get_phrase("message_won", **arguments)
-        elif result_msg == "lost":
-            out_message = self.get_phrase("message_lost", **arguments)
+        elif result_msg == "death":
+            out_message = self.get_phrase("message_death", **arguments)
         elif result_msg == "jackpot":
             out_message = self.get_phrase("message_jackpot", **arguments)
         elif result_msg == "hit":
             out_message = self.get_phrase("message_hit", ** arguments)
         elif result_msg == "bottom":
             out_message = self.get_phrase("message_bottom", **arguments)
+        elif result_msg == "loss":
+            out_message = self.get_phrase("message_loss", **arguments)
+        # TODO: Add a phrase for when bet return is less than 1
         
         bot.me(out_message)
 
