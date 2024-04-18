@@ -296,19 +296,13 @@ class AdminCommandsModule(BaseModule):
         self.commands["bankadd"] = Command.raw_command(
             self.edit_points,
             level=1500,
-            description="Modifies a user's points",
+            description="Give a user points",
             examples=[
                 CommandExample(
                     None,
                     "Give a user points",
                     chat="user:!bankadd pajlada 500\n" "bot>user:Successfully gave pajlada 500 points.",
                     description="This creates 500 points and gives them to pajlada",
-                ).parse(),
-                CommandExample(
-                    None,
-                    "Remove points from a user",
-                    chat="user:!bankadd pajlada -500\n" "bot>user:Successfully removed 500 points from pajlada.",
-                    description="This removes 500 points from pajlada. Users can go into negative points with this.",
                 ).parse(),
             ],
         )
@@ -323,6 +317,18 @@ class AdminCommandsModule(BaseModule):
                     chat="user:!bankedit pajlada 500\n" "bot>user:Successfully set pajlada's points to 500.",
                     description="This sets pajlada's points to 500.",
                 ).parse()
+            ],
+        )
+        self.commands["banksub"] = Command.raw_command(
+            self.sub_points,
+            level=1500,
+            description="Remove points from a user",
+            examples=[
+                CommandExample(
+                    None,
+                    "Remove a user's points",
+                    chat="user:!banksub pajlada 500\n" "bot>user: Successfully removed 500 points from pajlada.",
+                ).parse(),
             ],
         )
         self.commands["level"] = Command.raw_command(self.level, level=1000, description="Set a users level")
