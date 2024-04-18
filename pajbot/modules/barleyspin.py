@@ -427,18 +427,21 @@ class BarleySpinModule(BaseModule):
 
         bet_return, randomized_emotes, result_msg = self.speen()
 
-        if bet_return > 0:
-            points = int(round(bet * bet_return))
+        if bet_return >= 1:
+            result = points = int(round(bet * bet_return))
             source.points += points
+        elif bet_return >= 0.01:
+            points = int(round(bet * bet_return))
+            result = bet - points
         else:
-            points = bet
+            result = points = -bet
 
         source.points += points
 
         arguments = {
             "bet_return": round(bet_return, 2),
             "bet": bet,
-            "result": abs(points - bet),
+            "result": result,
             "user": source.name,
             "points": source.points,
             "emotes": " ▬ ".join(randomized_emotes),
