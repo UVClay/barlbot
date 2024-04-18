@@ -33,6 +33,34 @@ class AdminCommandsModule(BaseModule):
             rest = " ".join(msg_args[1:])
             bot.whisper_login(username, rest)
 
+    def sub_points(self, bot, source, message, **rest):
+        if not message:
+            return False
+
+        msg_split = message.split(" ")
+        if len(msg_split) < 2:
+            bot.whisper(source, f"Usage: !{self.command_name} USERNAME POINTS")
+            return False
+
+        username_input = msg_split[0]
+
+        try:
+            num_points = int(msg_split[1])
+        except (ValueError, TypeError):
+            bot.whisper(source, f"Invalid amount of points. Usage: !{self.command_name} USERNAME POINTS")
+            return False
+
+        with DBManager.create_session_scope() as db_session:
+            user = User.find_by_user_input(db_session, username_input)
+            if not user:
+                bot.whisper(source, f"{user} does not exist FailFish")
+                return False
+
+            user.points -= num_points
+
+            if num_points <= 0:
+                bot.whisper(source, f"Successfully removed {num_points} from {user}")
+
     def edit_points(self, bot, source, message, **rest):
         if not message:
             return False
@@ -55,7 +83,7 @@ class AdminCommandsModule(BaseModule):
         with DBManager.create_session_scope() as db_session:
             user = User.find_by_user_input(db_session, username_input)
             if not user:
-                bot.whisper(source, "This user does not exist FailFish")
+                bot.whisper(source, f"{user} does not exist FailFish")
                 return False
 
             user.points += num_points
@@ -90,7 +118,7 @@ class AdminCommandsModule(BaseModule):
         with DBManager.create_session_scope() as db_session:
             user = User.find_by_user_input(db_session, username)
             if not user:
-                bot.whisper(source, "This user does not exist FailFish")
+                bot.whisper(source, f"{user} does not exist FailFish")
                 return False
 
             user.points = num_points
@@ -265,7 +293,7 @@ class AdminCommandsModule(BaseModule):
 
     def load_commands(self, **options):
         self.commands["w"] = Command.raw_command(self.whisper, level=2000, description="Send a whisper from the bot")
-        self.commands["editpoints"] = Command.raw_command(
+        self.commands["bankadd"] = Command.raw_command(
             self.edit_points,
             level=1500,
             description="Modifies a user's points",
@@ -273,18 +301,18 @@ class AdminCommandsModule(BaseModule):
                 CommandExample(
                     None,
                     "Give a user points",
-                    chat="user:!editpoints pajlada 500\n" "bot>user:Successfully gave pajlada 500 points.",
+                    chat="user:!bankadd pajlada 500\n" "bot>user:Successfully gave pajlada 500 points.",
                     description="This creates 500 points and gives them to pajlada",
                 ).parse(),
                 CommandExample(
                     None,
                     "Remove points from a user",
-                    chat="user:!editpoints pajlada -500\n" "bot>user:Successfully removed 500 points from pajlada.",
+                    chat="user:!bankadd pajlada -500\n" "bot>user:Successfully removed 500 points from pajlada.",
                     description="This removes 500 points from pajlada. Users can go into negative points with this.",
                 ).parse(),
             ],
         )
-        self.commands["setpoints"] = Command.raw_command(
+        self.commands["bankedit"] = Command.raw_command(
             self.set_points,
             level=1500,
             description="Sets a user's points",
@@ -292,7 +320,7 @@ class AdminCommandsModule(BaseModule):
                 CommandExample(
                     None,
                     "Set a user's points",
-                    chat="user:!setpoints pajlada 500\n" "bot>user:Successfully set pajlada's points to 500.",
+                    chat="user:!bankedit pajlada 500\n" "bot>user:Successfully set pajlada's points to 500.",
                     description="This sets pajlada's points to 500.",
                 ).parse()
             ],
