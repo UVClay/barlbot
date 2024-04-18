@@ -87,7 +87,7 @@ class TopModule(BaseModule):
         excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
-            count = 0
+            count = 1
             while count < int(self.settings["num_top"]):
                 for user in db_session.query(User).order_by(User.num_lines.desc()).limit(limit):
                     if user.name.lower() not in excluded_users:
@@ -101,7 +101,7 @@ class TopModule(BaseModule):
         excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
-            count = 0
+            count = 1
             while count < int(self.settings["num_top"]):
                 for user in (
                   db_session.query(User).order_by(User.time_in_chat_online.desc()).limit(limit)
@@ -117,7 +117,7 @@ class TopModule(BaseModule):
         excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
-            count = 0
+            count = 1
             while count < self.settings["num_top"]:
                 for user in (
                     db_session.query(User).order_by(User.time_in_chat_offline.desc()).limit(limit)
@@ -133,7 +133,7 @@ class TopModule(BaseModule):
         excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
-            count = 0
+            count = 1
             while count < self.settings["num_top"]:
                 for user in db_session.query(User).order_by(User.points.desc()).limit(limit):
                     if user.name.lower() not in excluded_users:
@@ -161,18 +161,84 @@ class TopModule(BaseModule):
 
     def load_commands(self, **options):
         if self.settings["enable_topchatters"]:
-            self.commands["topchatters"] = Command.raw_command(self.top_chatters)
+            self.commands["topchatters"] = Command.raw_command(
+                self.top_chatters,
+                description="list top 10 chatters",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 chatters",
+                        chat="user:!topchatters\n" "bot: Top 10 chatters: you (666), me (420)",
+                        description="List the top 10 chatters"
+                    ).parse()
+                ],
+            )
 
         if self.settings["enable_topwatchers"]:
-            self.commands["topwatchers"] = Command.raw_command(self.top_watchers)
-            self.commands["hrs"] = Command.raw_command(self.top_watchers)
+            self.commands["topwatchers"] = Command.raw_command(
+                self.top_watchers,
+                description="list top 10 watchers",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 watchers",
+                        chat="user:!topwatchers\n" "bot: Top 10 watchers: you (66d6h), me (4d20h)",
+                        description="List the top 10 watchers"
+                    ).parse()
+                ],
+            )
+            self.commands["hrs"] = Command.raw_command(
+                self.top_watchers,
+                description="list top 10 watchers",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 watchers",
+                        chat="user:!hrs\n" "bot: Top 10 watchers: you (66d6h), me (4d20h)",
+                        description="List the top 10 watchers"
+                    ).parse()
+                ],
+            )
 
         if self.settings["enable_topoffline"]:
             self.commands["topoffline"] = Command.raw_command(self.top_offline)
 
         if self.settings["enable_toppoints"]:
-            self.commands["toppoints"] = Command.raw_command(self.top_points)
-            self.commands["top10"] = Command.raw_command(self.top_points)
+            self.commands["toppoints"] = Command.raw_command(
+                self.top_points,
+                description="list top 10 banks",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 bank balances",
+                        chat="user:!toppoints\n" "bot: Top 10 banks: you (666), me (420)",
+                        description="List the top 10 bank balances"
+                    ).parse()
+                ],
+            )
+            self.commands["top10"] = Command.raw_command(
+                self.top_points,
+                description="list top 10 banks",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 bank balances",
+                        chat="user:!top10\n" "bot: Top 10 banks: you (666), me (420)",
+                        description="List the top 10 banks"
+                    ).parse()
+                ],
+            )
 
         if self.settings["enable_topemotes"]:
-            self.commands["topemotes"] = Command.raw_command(self.top_emotes)
+            self.commands["topemotes"] = Command.raw_command(
+                self.top_emotes,
+                description="list top 10 emotes",
+                examples=[
+                    CommandExample(
+                        None,
+                        "List top 10 emotes",
+                        chat="user:!topemotes\n" "bot: Top 10 emotes: barlSaad (1337), barlGB (666), CiGrip (420)",
+                        description="List the top 10 emotes"
+                    ).parse()
+                ],
+            )
