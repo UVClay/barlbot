@@ -2,7 +2,7 @@ import logging
 
 from pajbot.managers.db import DBManager
 from pajbot.managers.redis import RedisManager
-from pajbot.models.command import Command
+from pajbot.models.command import Command, CommandExample
 from pajbot.models.user import User
 from pajbot.modules import BaseModule, ModuleSetting
 from pajbot.streamhelper import StreamHelper
