@@ -24,7 +24,7 @@ class TopModule(BaseModule):
             required=True,
             placeholder="min 1, max 5",
             default=3,
-            constraints={"min_value": 1, "max_value": 5},
+            constraints={"min_value": 1, "max_value": 10},
         ),
         ModuleSetting(
             key="num_top_emotes",
@@ -34,6 +34,15 @@ class TopModule(BaseModule):
             placeholder="min 1, max 10",
             default=5,
             constraints={"min_value": 1, "max_value": 10},
+        ),
+        ModuleSetting(
+            key="exclusions",
+            label="Excluded users, space separated.",
+            type="text",
+            required=True,
+            placeholder="",
+            default="",
+            constraints={"min_str_len":0, "max_str_len": 100},
         ),
         ModuleSetting(
             key="enable_topchatters",
@@ -72,39 +81,62 @@ class TopModule(BaseModule):
         ),
     ]
 
+    def __init__(self):
+        self.exclusions = self.settings["exclusions"].split()
+
     def top_chatters(self, bot, **rest):
         data = []
+        limit = int(self.settings["num_top"]) + len(self.exclusions)
         with DBManager.create_session_scope() as db_session:
-            for user in db_session.query(User).order_by(User.num_lines.desc()).limit(self.settings["num_top"]):
-                data.append(f"{user} ({user.num_lines})")
+            count = 0
+            while count < int(self.settings["num_top"]):
+                for user in db_session.query(User).order_by(User.num_lines.desc()).limit(limit):
+                    if user not in self.exclusions:
+                        data.append(f"{user} ({user.num_lines})")
+                        count += 1
 
         bot.say(f"Top {self.settings['num_top']} chatters: {', '.join(data)}")
 
     def top_watchers(self, bot, **rest):
         data = []
+        limit = int(self.settings["num_top"]) + len(self.exclusions)
         with DBManager.create_session_scope() as db_session:
-            for user in (
-                db_session.query(User).order_by(User.time_in_chat_online.desc()).limit(self.settings["num_top"])
-            ):
-                data.append(f"{user} ({time_since(user.time_in_chat_online.total_seconds(), 0, time_format='short')})")
+            count = 0
+            while count < int(self.settings["num_top"]):
+                for user in (
+                  db_session.query(User).order_by(User.time_in_chat_online.desc()).limit(limit)
+                ):
+                    if user not in self.exclusions:
+                        data.append(f"{user} ({time_since(user.time_in_chat_online.total_seconds(), 0, time_format='short')})")
+                        count += 1
 
         bot.say(f"Top {self.settings['num_top']} watchers: {', '.join(data)}")
 
     def top_offline(self, bot, **rest):
         data = []
+        limit = int(self.settings["num_top"]) + len(self.exclusions)
         with DBManager.create_session_scope() as db_session:
-            for user in (
-                db_session.query(User).order_by(User.time_in_chat_offline.desc()).limit(self.settings["num_top"])
-            ):
-                data.append(f"{user} ({time_since(user.time_in_chat_offline.total_seconds(), 0, time_format='short')})")
+            count = 0
+            while count < self.settings["num_top"]:
+                for user in (
+                    db_session.query(User).order_by(User.time_in_chat_offline.desc()).limit(limit)
+                ):
+                    if user not in self.exclusions:
+                        data.append(f"{user} ({time_since(user.time_in_chat_offline.total_seconds(), 0, time_format='short')})")
+                        count += 1
 
         bot.say(f"Top {self.settings['num_top']} offline chatters: {', '.join(data)}")
 
     def top_points(self, bot, **rest):
         data = []
+        limit = int(self.settings["num_top"]) + len(self.exclusions)
         with DBManager.create_session_scope() as db_session:
-            for user in db_session.query(User).order_by(User.points.desc()).limit(self.settings["num_top"]):
-                data.append(f"{user} ({user.points})")
+            count = 0
+            while count < self.settings["num_top"]:
+                for user in db_session.query(User).order_by(User.points.desc()).limit(limit):
+                    if user not in self.exclusions:
+                        data.append(f"{user} ({user.points})")
+                        count += 1
 
         bot.say(f"Top {self.settings['num_top']} banks: {', '.join(data)}")
 
