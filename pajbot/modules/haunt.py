@@ -189,11 +189,12 @@ class HauntModule(BaseModule):
             ]
 
         loss_messages = [
-            " found themselves cornered in the kitchen by the Count. Looks like 'hero' is on the menu tonight, boys! Better luck next time. barlFood",
-            " thought they evaded the Count's grasp in his dungeons, instead, with a sickening crunch, they found themselves split in half by one of the many traps below. Ouch. barlSaad",
-            " sought refuge in the library, good call! That was until the the shadows of the manor found new blood, dragging them into an endless, black abyss. Oof. barlGB",
-            " hid under the bed in the master bedroom, unfortunate for them, that's also where the giant trapdoor spider had made its nest. Tough break. barlS",
-            " sought refuge inside the greenhouse, however thorned vines quickly ensnare them, dragging them into the gaping maw of a behemoth sized Venus flytrap. Rough luck, indeed. barlGB"
+            " found themselves cornered in the kitchen by the Count. Looks like 'hero' is on the menu tonight, boys! barlFood",
+            " entered the dungeons but unfortunately found themselves caught on the pointy end of a spear trap. Ouch. barlSaad",
+            " sought refuge in the library, good call! That was until the the shadows of the manor dragged them into an endless, black abyss. barlGB",
+            " hid under the bed in the master bedroom! Unfortunately that's also where the giant trapdoor spider had made its nest. barlS",
+            " ventured into the botanical garden, it's not long before they find themselves being dragged into the gaping maw of a monstrous Venus flytrap. barlGB",
+            " took shelter in the kennels only to find that the Count's wolves hadn't yet been fed. barlFood"
         ]
 
         wipe_messages = [
@@ -203,7 +204,7 @@ class HauntModule(BaseModule):
         sabotage_messages = [
             "Upon entering the mansion, one of you felt an eerie sensation enveloping them as the Count's malevolent influence clouded their mind. \
             Before they knew it, {PLAYER} was horrified to find themselves standing over the bloodied remains of their allies. \
-            It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Enjoy it, killer. barlMadn",
+            It's not all bad though, this grim turn of events meant they wouldn't need to share any of the reward. Spend it wisely, killer. barlMadn",
             "While the rest of the brave adventurers entered the manor, {PLAYER} claimed they would catch up with everyone in a moment. The door slams shut \
             and our adventurers find themselves trapped as their supposed compatriot sets fire to the house, killing everyone inside and taking the reward for themselves. \
             Enjoy your payday, traitor. barlSaad"
