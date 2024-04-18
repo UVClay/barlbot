@@ -402,7 +402,7 @@ class BarleySpinModule(BaseModule):
                 return False
 
         if bet < self.settings["min_bet"]:
-            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} bones! barlOk")
+            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} bones. barlOk")
             return False
         elif bet > self.settings["max_bet"]:
             bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} bones. barlOk")

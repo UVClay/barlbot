@@ -292,7 +292,7 @@ class HauntModule(BaseModule):
                 bot.me("Losers: " + losses_buffer)
 
             elif not all(x == winloss[0] for x in winloss) or len(self.players) == 1:
-                # low player count fallback
+                # single haunter
                 for player in self.players:
                     if random.randint(0, 1):
                         self.payout(self.players[player][0], round(self.players[player][1] * 1.5))
@@ -342,7 +342,7 @@ class HauntModule(BaseModule):
             log.debug(f"Message:\"{message}\"")
             int(message)
         except ValueError:
-            bot.me(source.name + ": You need to bet some bones to enter the house. barlOk")
+            bot.me(f"{source.name}: You need to bet some bones to enter the house. barlOk")
             return False
         else:
             try:
@@ -351,8 +351,14 @@ class HauntModule(BaseModule):
                 bot.whisper(source, str(e))
                 return False
 
-        if bet >= self.settings["max_bet"]:
-            bot.me("Slow down there, champ. High rollers NOT ALLOWED. barlOk")
+        if bet < self.settings["min_bet"]:
+            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} bones. barlOk")
+            return False
+        elif bet > self.settings["max_bet"]:
+            bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} bones. barlOk")
+            return False
+        elif not source.can_afford(bet):
+            bot.me(f"{source.name}: You only have {source.points} bones. barlOk")
             return False
 
         arguments = {
