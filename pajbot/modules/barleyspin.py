@@ -69,7 +69,7 @@ class BarleySpinModule(BaseModule):
     SETTINGS = [
         ModuleSetting(
             key="message_won",
-            label="Won message | Available arguments: {bet}, {points}, {user}, {emotes}, {result}",
+            label="Won message | Available arguments: {bet}, {bet_return}, {points}, {user}, {emotes}, {result}",
             type="text",
             required=True,
             placeholder="▬[ {emotes} ]▬ | {result} bones paid out to {user}!",
@@ -449,6 +449,7 @@ class BarleySpinModule(BaseModule):
         source.points += points
 
         arguments = {
+            "bet_return": round(bet_return, 2),
             "bet": bet,
             "result": points,
             "user": source.name,
