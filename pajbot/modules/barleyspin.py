@@ -429,9 +429,10 @@ class BarleySpinModule(BaseModule):
             "result": points,
             "user": source.name,
             "points": source.points,
-            "win": points > 0,
             "emotes": " ▬ ".join(randomized_emotes),
         }
+
+        log.debug(f"User: {source.name} Result: {result_msg} Bet: {bet} Return: {bet_return} Total: {points}")
 
         if result_msg == "won":
             out_message = self.get_phrase("message_won", **arguments)

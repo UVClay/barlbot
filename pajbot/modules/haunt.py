@@ -161,9 +161,7 @@ class HauntModule(BaseModule):
     def payout(self, user, payout):
         with DBManager.create_session_scope() as db_session:
             user_obj = User.find_by_id(db_session, user)
-            log.debug(f"Paying out to {user_obj.name}, payout: {payout}, current points: {user_obj.points}")
             user_obj.points += payout
-            log.debug(f"Paid out to {user_obj.name}, current points: {user_obj.points}")
             HandlerManager.trigger("on_haunt_finish", user=user_obj, points=payout)
 
     def generate_flavor(self, users, message):
@@ -214,6 +212,8 @@ class HauntModule(BaseModule):
         jackpot_messages = [
             "All have emerged victorious! With unwavering dedication and courage, Count Charles has been banished from his haunted manor. Liloleman can finally breathe easy! For now... barlMadn"
         ]
+
+        log.debug(f"Haunt results: Outcome: {outcome} Players: {len(self.players)}")
 
         if not len(self.players) == 1 and outcome[0] == "sabotage":
             # Only trigger sus mode with more than 1 player
@@ -324,6 +324,7 @@ class HauntModule(BaseModule):
                     bot.me(loser_buffer)
 
         self.last_play = utils.now()
+        # Timed event to alert when haunt is active again
         bot.execute_delayed(self.settings["online_global_cd"], bot.me, self.get_phrase("alert_message_when_live"))
         self.players = {} 
         self.loading = False
@@ -373,10 +374,12 @@ class HauntModule(BaseModule):
             out_message = self.get_phrase("start_join_message", **arguments)
             source.points -= bet
             log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")
+            # Start timed tasks
             arguments = {"length": int(self.settings["wait_time"] * 0.66), "numplayers": len(self.players)}
             bot.execute_delayed(self.settings["wait_time"] * 0.33, bot.me, self.get_phrase("haunt_soon", **arguments))
             arguments = {"length": int(self.settings["wait_time"] * 0.33), "numplayers": len(self.players)}
             bot.execute_delayed(self.settings["wait_time"] * 0.66, bot.me, self.get_phrase("haunt_soon", **arguments))
+            # Final timed task to actually execute the haunt
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
