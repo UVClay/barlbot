@@ -90,7 +90,7 @@ class TopModule(BaseModule):
             count = 0
             while count < int(self.settings["num_top"]):
                 for user in db_session.query(User).order_by(User.num_lines.desc()).limit(limit):
-                    if lower(user.name) not in excluded_users:
+                    if user.name.lower() not in excluded_users:
                         data.append(f"{user} ({user.num_lines})")
                         count += 1
 
@@ -106,7 +106,7 @@ class TopModule(BaseModule):
                 for user in (
                   db_session.query(User).order_by(User.time_in_chat_online.desc()).limit(limit)
                 ):
-                    if lower(user.name) not in excluded_users:
+                    if user.name.lower() not in excluded_users:
                         data.append(f"{user} ({time_since(user.time_in_chat_online.total_seconds(), 0, time_format='short')})")
                         count += 1
 
@@ -122,7 +122,7 @@ class TopModule(BaseModule):
                 for user in (
                     db_session.query(User).order_by(User.time_in_chat_offline.desc()).limit(limit)
                 ):
-                    if lower(user.name) not in excluded_users:
+                    if user.name.lower() not in excluded_users:
                         data.append(f"{user} ({time_since(user.time_in_chat_offline.total_seconds(), 0, time_format='short')})")
                         count += 1
 
@@ -136,7 +136,7 @@ class TopModule(BaseModule):
             count = 0
             while count < self.settings["num_top"]:
                 for user in db_session.query(User).order_by(User.points.desc()).limit(limit):
-                    if lower(user.name) not in excluded_users:
+                    if user.name.lower() not in excluded_users:
                         data.append(f"{user} ({user.points})")
                         count += 1
 
