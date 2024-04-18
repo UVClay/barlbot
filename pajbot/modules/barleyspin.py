@@ -13,54 +13,6 @@ from pajbot.modules import BaseModule, ModuleSetting
 
 log = logging.getLogger(__name__)
 
-# pull_lol returns the: (bet_return, emotes)
-#def pull_lol(**slotargs):
-#    slot_options = []
-#    for e in death_emotes:
-#        slot_options += [e] * 2
-#    for e in low_tier_emotes:
-#        slot_options += [e] * 3
-#    for e in high_tier_emotes:
-#        slot_options += [e]
-#
-#    randomized_emotes = random.choices(slot_options, k=3)
-#
-#    # figure out results of these randomized emotes xd
-#    bet_return = 0.0
-#    result_msg = "won"
-#
-#    emote_counts = Counter(randomized_emotes)
-#
-#    for emote_name in emote_counts:
-#        emote_count = emote_counts[emote_name]
-#
-#        if emote_count <= 1:
-#            bet_return = 0.5
-#            continue
-#
-#        if emote_count == 2:
-#            # return money if death
-#            if emote_name in death_emotes:
-#                bet_return = 0.75
-#            # small win
-#            elif emote_name in low_tier_emotes:
-#                bet_return += ltsw
-#            else:
-#                bet_return += htsw
-#
-#        if emote_count == 3:
-#            # big win
-#            if emote_name in death_emotes:
-#                result_msg = "lost"
-#                continue
-#            elif emote_name in low_tier_emotes:
-#                bet_return += ltbw
-#            else:
-#                result_msg = "jackpot"
-#                bet_return += htbw
-#
-#    return bet_return, randomized_emotes, result_msg
-
 class BarleySpinModule(BaseModule):
     ID = __name__.split(".")[-1]
     NAME = "Slot Machine (Barley Spins)"
@@ -78,7 +30,7 @@ class BarleySpinModule(BaseModule):
         ),
         ModuleSetting(
             key="message_jackpot",
-            label="Jackpot message | Available arguments: {bet}, {points}, {user}, {emotes}",
+            label="Jackpot message | Available arguments: {bet}, {bet_return}, {points}, {user}, {emotes}",
             type="text",
             required=True,
             placeholder="▬[ {emotes} ]▬ | Big money! Big prizes! I love it! | {points} paid out to {user}!",
@@ -87,7 +39,7 @@ class BarleySpinModule(BaseModule):
         ),
         ModuleSetting(
             key="message_lost",
-            label="Lost message | Available arguments: {bet}, {points}, {user}, {emotes}",
+            label="Lost message | Available arguments: {bet}, {bet_return}, {points}, {user}, {emotes}",
             type="text",
             required=True,
             placeholder="▬[ {emotes} ]▬ | NO MONEY {user} barlMadden NO PRIZES barlMadden I HATE IT barl1 barl2",
@@ -102,6 +54,14 @@ class BarleySpinModule(BaseModule):
             placeholder="▬[ {emotes} ]▬ | Woah! Mini jackpot! | {bet_return}x payout! | {result} bones paid out to {user}!",
             default="▬[ {emotes} ]▬ | Woah! Mini jackpot! | {bet_return}x payout! | {result} bones paid out to {user}!",
             constraints={"min_str_len": 10, "max_str_len": 400},
+        ),
+        ModuleSetting(
+            key="message_bottom",
+            label="Bottom tier hit message | Avaialble arguments: {bet}, {bet_return}, {points}, {user}, {emotes}, {result}",
+            type="text",
+            placeholder="▬[ {emotes} ]▬ | Yo, {user}. barlSaad My name is Saad, and I don't give a fuck. barlSaad | {result} bones paid out!",
+            default="▬[ {emotes} ]▬ | Yo, {user}. barlSaad My name is Saad, and I don't give a fuck. barlSaad | {result} bones paid out!",
+            constraints={"min_str_len": 1, "max_str_len": 400},
         ),
         ModuleSetting(
             key="death_tier_emotes",
@@ -406,8 +366,11 @@ class BarleySpinModule(BaseModule):
             elif result_emotes[0].tier == "god":
                 bet_return = 9
                 result_msg = "jackpot"
+            elif result_emotes[0].tier == "bottom":
+                bet_return = result_emotes[0].payout * random.uniform(1.0, 2.0)
+                result_msg = "bottom"
             else:
-                bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) * random.uniform(0.4, 0.8)
+                bet_return = result_emotes[0].payout * random.uniform(2.5, 4.0)
                 result_msg = "hit"
 
         else:
@@ -478,6 +441,8 @@ class BarleySpinModule(BaseModule):
             out_message = self.get_phrase("message_jackpot", **arguments)
         elif result_msg == "hit":
             out_message = self.get_phrase("message_hit", ** arguments)
+        elif result_msg == "bottom":
+            out_message = self.get_phrase("message_bottom", **arguments)
         
         bot.me(out_message)
 
