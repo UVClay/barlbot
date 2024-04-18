@@ -84,13 +84,13 @@ class TopModule(BaseModule):
 
     def top_chatters(self, bot, **rest):
         data = []
-        excluded_users = self.settings["excluded_users"].split()
+        excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
             while count < int(self.settings["num_top"]):
                 for user in db_session.query(User).order_by(User.num_lines.desc()).limit(limit):
-                    if user.name not in excluded_users:
+                    if lower(user.name) not in excluded_users:
                         data.append(f"{user} ({user.num_lines})")
                         count += 1
 
@@ -98,7 +98,7 @@ class TopModule(BaseModule):
 
     def top_watchers(self, bot, **rest):
         data = []
-        excluded_users = self.settings["excluded_users"].split()
+        excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
@@ -106,7 +106,7 @@ class TopModule(BaseModule):
                 for user in (
                   db_session.query(User).order_by(User.time_in_chat_online.desc()).limit(limit)
                 ):
-                    if user.name not in excluded_users:
+                    if lower(user.name) not in excluded_users:
                         data.append(f"{user} ({time_since(user.time_in_chat_online.total_seconds(), 0, time_format='short')})")
                         count += 1
 
@@ -114,7 +114,7 @@ class TopModule(BaseModule):
 
     def top_offline(self, bot, **rest):
         data = []
-        excluded_users = self.settings["excluded_users"].split()
+        excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
@@ -122,7 +122,7 @@ class TopModule(BaseModule):
                 for user in (
                     db_session.query(User).order_by(User.time_in_chat_offline.desc()).limit(limit)
                 ):
-                    if user.name not in excluded_users:
+                    if lower(user.name) not in excluded_users:
                         data.append(f"{user} ({time_since(user.time_in_chat_offline.total_seconds(), 0, time_format='short')})")
                         count += 1
 
@@ -130,13 +130,13 @@ class TopModule(BaseModule):
 
     def top_points(self, bot, **rest):
         data = []
-        excluded_users = self.settings["excluded_users"].split()
+        excluded_users = self.settings["excluded_users"].lower().split()
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
             while count < self.settings["num_top"]:
                 for user in db_session.query(User).order_by(User.points.desc()).limit(limit):
-                    if user.name not in excluded_users:
+                    if lower(user.name) not in excluded_users:
                         data.append(f"{user} ({user.points})")
                         count += 1
 
@@ -165,12 +165,14 @@ class TopModule(BaseModule):
 
         if self.settings["enable_topwatchers"]:
             self.commands["topwatchers"] = Command.raw_command(self.top_watchers)
+            self.commands["hrs"] = Command.raw_command(self.top_watchers)
 
         if self.settings["enable_topoffline"]:
             self.commands["topoffline"] = Command.raw_command(self.top_offline)
 
         if self.settings["enable_toppoints"]:
             self.commands["toppoints"] = Command.raw_command(self.top_points)
+            self.commands["top10"] = Command.raw_command(self.top_points)
 
         if self.settings["enable_topemotes"]:
             self.commands["topemotes"] = Command.raw_command(self.top_emotes)
