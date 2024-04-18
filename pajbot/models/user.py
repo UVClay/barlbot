@@ -198,6 +198,10 @@ class User(Base):
         return int(self.time_in_chat_online.total_seconds() / 60)
 
     @property
+    def hours_in_chat_online(self) -> int:
+        return int((self.time_in_chat_online.total_seconds() / 60) / 60)
+
+    @property
     def minutes_in_chat_offline(self) -> int:
         # retained for backwards compatibility with commands that still use this property
         return int(self.time_in_chat_offline.total_seconds() / 60)
