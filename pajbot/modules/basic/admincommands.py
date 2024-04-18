@@ -58,7 +58,7 @@ class AdminCommandsModule(BaseModule):
 
             user.points -= num_points
 
-            if num_points <= 0:
+            if num_points >= 0:
                 bot.whisper(source, f"Successfully removed {num_points} from {user}")
 
     def edit_points(self, bot, source, message, **rest):
@@ -319,6 +319,7 @@ class AdminCommandsModule(BaseModule):
                 ).parse()
             ],
         )
+
         self.commands["banksub"] = Command.raw_command(
             self.sub_points,
             level=1500,
@@ -331,6 +332,7 @@ class AdminCommandsModule(BaseModule):
                 ).parse(),
             ],
         )
+
         self.commands["level"] = Command.raw_command(self.level, level=1000, description="Set a users level")
 
         self.commands["silence"] = Command.raw_command(self.cmd_silence, level=500, description="Silence the bot")
