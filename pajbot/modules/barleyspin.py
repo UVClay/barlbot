@@ -438,7 +438,7 @@ class BarleySpinModule(BaseModule):
         arguments = {
             "bet_return": round(bet_return, 2),
             "bet": bet,
-            "result": points - bet,
+            "result": abs(points - bet),
             "user": source.name,
             "points": source.points,
             "emotes": " ▬ ".join(randomized_emotes),
