@@ -395,11 +395,11 @@ class BarleySpinModule(BaseModule):
                 bet_return = 0
                 result_msg = "lost"
             elif result_emotes[0].tier == "god":
-                bet_return = 3
+                bet_return = 9
                 result_msg = "jackpot"
 
         else:
-            bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) / 3
+            bet_return = (result_emotes[0].payout + result_emotes[1].payout + result_emotes[2].payout) * random.uniform(0.9, 1.2)
             result_msg = "won"
 
         for emote in result_emotes:
@@ -427,13 +427,13 @@ class BarleySpinModule(BaseModule):
                 return False
 
         if bet < self.settings["min_bet"]:
-            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} points! barlOk")
+            bot.me(f"{source.name}: You have to bet at least {self.settings['min_bet']} bones! barlOk")
             return False
         elif bet > self.settings["max_bet"]:
-            bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} points. barlOk")
+            bot.me(f"{source.name}: You can only bet {self.settings['max_bet']} bones. barlOk")
             return False
         elif not source.can_afford(bet):
-            bot.me(f"{source.name}: You only have {source.points} points. barlOk")
+            bot.me(f"{source.name}: You only have {source.points} bones. barlOk")
             return False
         else:
             source.points -= bet
@@ -463,8 +463,6 @@ class BarleySpinModule(BaseModule):
             out_message = self.get_phrase("message_lost", **arguments)
         elif result_msg == "jackpot":
             out_message = self.get_phrase("message_jackpot", **arguments)
-        else:
-            out_message = "oh holky fuck uvclay fix it idiot"
         
         bot.me(out_message)
 
