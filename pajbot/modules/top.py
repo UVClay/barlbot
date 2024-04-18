@@ -85,6 +85,8 @@ class TopModule(BaseModule):
     def top_chatters(self, bot, **rest):
         data = []
         excluded_users = self.settings["excluded_users"].split()
+        for user in excluded_users:
+            bot.me(user)
         limit = int(self.settings["num_top"]) + len(excluded_users)
         with DBManager.create_session_scope() as db_session:
             count = 0
