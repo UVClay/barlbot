@@ -81,7 +81,9 @@ class TopModule(BaseModule):
         ),
     ]
 
-    exclusions = self.settings["exclusions"].split()
+    def __init__(self, bot):
+        super().__init__(bot)
+        exclusions = self.settings["exclusions"].split()
 
     def top_chatters(self, bot, **rest):
         data = []
