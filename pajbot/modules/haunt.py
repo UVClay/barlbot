@@ -170,10 +170,12 @@ class HauntModule(BaseModule):
         buffer = ""
         if len(users) == 1:
             buffer += users[0] + message
-        else:
+        elif len(users) == 2:
+            buffer += users[0] + " & " + users[1] + message
+        elif len(users) >= 3:
             for user in users[:-1]:
                 buffer += user + ", "
-        buffer += "& " + users[-1] + message
+            buffer += "& " + users[-1] + message
 
         return buffer
 
