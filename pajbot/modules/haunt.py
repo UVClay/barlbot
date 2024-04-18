@@ -192,7 +192,7 @@ class HauntModule(BaseModule):
             " found themselves cornered in the kitchen by the Count. Looks like 'hero' is on the menu tonight, boys! Better luck next time. barlFood",
             " thought they evaded the Count's grasp in his dungeons, instead, with a sickening crunch, they found themselves split in half by one of the many traps below. Ouch. barlSaad",
             " sought refuge in the library, good call! That was until the the shadows of the manor found new blood, dragging them into an endless, black abyss. Oof. barlGB",
-            " hid under the bed in the master bedroom, unfortunate for them, that's where the giant trapdoor spider had made it's nest. Tough break. barlS",
+            " hid under the bed in the master bedroom, unfortunate for them, that's also where the giant trapdoor spider had made its nest. Tough break. barlS",
             " sought refuge inside the greenhouse, however thorned vines quickly ensnare them, dragging them into the gaping maw of a behemoth sized Venus flytrap. Rough luck, indeed. barlGB"
         ]
 
@@ -365,15 +365,15 @@ class HauntModule(BaseModule):
             out_message = self.get_phrase("start_join_message", **arguments)
             source.points -= bet
             log.debug(f"{source.name} joined the haunt. Points: {source.points} Bet: {bet}")
-            arguments = {"length": self.settings["wait_time"] * 0.66, "numplayers": len(self.players)}
+            arguments = {"length": int(self.settings["wait_time"] * 0.66), "numplayers": len(self.players)}
             bot.execute_delayed(self.settings["wait_time"] * 0.33, bot.me, self.get_phrase("haunt_soon", **arguments))
-            arguments = {"length": self.settings["wait_time"] * 0.33, "numplayers": len(self.players)}
+            arguments = {"length": int(self.settings["wait_time"] * 0.33), "numplayers": len(self.players)}
             bot.execute_delayed(self.settings["wait_time"] * 0.66, bot.me, self.get_phrase("haunt_soon", **arguments))
             bot.execute_delayed(self.settings["wait_time"], self.haunt_results, bot)
 
         else:
-            if source in self.players:
-                bot.me("You already joined the haunt you goofy!")
+            if source.name in self.players:
+                bot.me("You already joined the haunt! barlOk")
                 return False
             self.players[source.name] = [source.id, bet]
             source.points -= bet
