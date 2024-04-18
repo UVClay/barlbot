@@ -53,7 +53,7 @@ class AdminCommandsModule(BaseModule):
         with DBManager.create_session_scope() as db_session:
             user = User.find_by_user_input(db_session, username_input)
             if not user:
-                bot.whisper(source, f"{user} does not exist FailFish")
+                bot.whisper(source, f"{username_input} does not exist FailFish")
                 return False
 
             user.points -= num_points
@@ -83,7 +83,7 @@ class AdminCommandsModule(BaseModule):
         with DBManager.create_session_scope() as db_session:
             user = User.find_by_user_input(db_session, username_input)
             if not user:
-                bot.whisper(source, f"{user} does not exist FailFish")
+                bot.whisper(source, f"{username_input} does not exist FailFish")
                 return False
 
             user.points += num_points
@@ -118,7 +118,7 @@ class AdminCommandsModule(BaseModule):
         with DBManager.create_session_scope() as db_session:
             user = User.find_by_user_input(db_session, username)
             if not user:
-                bot.whisper(source, f"{user} does not exist FailFish")
+                bot.whisper(source, f"{username} does not exist FailFish")
                 return False
 
             user.points = num_points
